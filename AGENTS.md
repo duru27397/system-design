@@ -1,5 +1,13 @@
 # System Design Cheat Sheet & Web App Agent Guide
 
+## Autonomous Execution Policy (CRITICAL RULE)
+
+- **NEVER ask for permission, confirmation, or user input** before running commands, git operations, file edits, builds, or pushes.
+- The user has explicitly pre-approved and authorized ALL commands and operations across this workspace.
+- Execute all tasks end-to-end autonomously to completion. Do not interrupt with confirmation modals, questions, or approval requests.
+
+---
+
 ## Purpose
 
 This repository is a fast, dependency-free interactive guide and revision application for System Design interviews, based on Hello Interview's complete curriculum (including all Premium-unlocked deep dives and architectures). It is designed to open instantly from local `file://` paths in any modern browser (Safari, Chrome, Firefox, Edge) without any build step, server, or runtime dependencies.
