@@ -398,6 +398,14 @@ a:hover {
   text-overflow: ellipsis;
 }
 
+#current-topic {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+  min-width: 0;
+}
+
 .breadcrumb-category {
   color: var(--muted);
   font-weight: 500;

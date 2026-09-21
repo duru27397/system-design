@@ -35,7 +35,7 @@
 
     // Fallback if targetPage doesn't exist
     if (!targetPage || !targetPage.classList.contains("page-view")) {
-      targetId = "in-a-hurry-introduction";
+      targetId = "core-concepts-networking-essentials";
       targetPage = document.getElementById(targetId);
     }
 
@@ -237,7 +237,7 @@
   const initFromHash = () => {
     const hash = window.location.hash.slice(1);
     if (!hash) {
-      showPage("in-a-hurry-introduction", false);
+      showPage("core-concepts-networking-essentials", false);
       return;
     }
 

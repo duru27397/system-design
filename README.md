@@ -1,13 +1,12 @@
 # System Design Cheat Sheet
 
-A compact, dependency-free interactive revision cheat sheet for System Design featuring a 3-level hierarchical navigation tree (Category $\to$ Topic $\to$ Sub-Section/Deep Dive), LeetCode Monaco editor syntax highlighting, instant search, and discrete non-scrolling page views across six core domains:
+A compact, dependency-free interactive revision cheat sheet for System Design featuring a 3-level hierarchical navigation tree (Category $\to$ Topic $\to$ Sub-Section/Deep Dive), LeetCode Monaco editor syntax highlighting, instant search, and discrete non-scrolling page views across five core domains:
 
-1. **System Design in a Hurry** (7 topics: Delivery framework, core concepts, key technologies, patterns, problem breakdowns)
-2. **Core Concepts** (9 topics: Networking essentials, API design, data modeling, database indexing, caching, sharding, consistent hashing, CAP theorem, numbers to know)
-3. **System Design Patterns** (7 topics: Realtime updates, dealing with contention, multi-step processes, scaling reads/writes, large blobs, long-running tasks)
-4. **Technology Deep Dives** (14 topics: Kafka, Redis, Cassandra, DynamoDB, Postgres, Elasticsearch, Flink, ZooKeeper, Vector DBs, Time-series DBs, CDC)
-5. **Problem Breakdowns** (32 end-to-end architectures: Yelp, Instagram, Uber, WhatsApp, LeetCode, YouTube, Ticketmaster, Distributed Cache, Rate Limiter, etc.)
-6. **Real-World Architecture** (6 production case studies: Shopify, Discord, Slack, Figma, Spotify, Meta)
+1. **Core Concepts** (9 topics: Networking essentials, API design, data modeling, database indexing, caching, sharding, consistent hashing, CAP theorem, numbers to know)
+2. **System Design Patterns** (7 topics: Realtime updates, dealing with contention, multi-step processes, scaling reads/writes, large blobs, long-running tasks)
+3. **Technology Deep Dives** (14 topics: Kafka, Redis, Cassandra, DynamoDB, Postgres, Elasticsearch, Flink, ZooKeeper, Vector DBs, Time-series DBs, CDC)
+4. **Problem Breakdowns** (32 end-to-end architectures: Yelp, Instagram, Uber, WhatsApp, LeetCode, YouTube, Ticketmaster, Distributed Cache, Rate Limiter, etc.)
+5. **Real-World Architecture** (6 production case studies: Shopify, Discord, Slack, Figma, Spotify, Meta)
 
 ---
 
@@ -33,7 +32,7 @@ A compact, dependency-free interactive revision cheat sheet for System Design fe
 
 The sidebar is organized into a clean 3-level taxonomy:
 
-- **Level 1 (Category - A)**: System Design in a Hurry, Core Concepts, System Design Patterns, Technology Deep Dives, Problem Breakdowns, Real-World Architecture
+- **Level 1 (Category - A)**: Core Concepts, System Design Patterns, Technology Deep Dives, Problem Breakdowns, Real-World Architecture
 - **Level 2 (Topic / Problem - B)**: Specific problem or concept (e.g. Yelp, Instagram, Distributed Cache, Sharding, Kafka)
 - **Level 3 (Sub-Section / Deep Dive - C)**: Specific section anchors (e.g. Functional Requirements, Core Entities, API Design, High-Level Architecture, Potential Deep Dives, Final Design)
 
@@ -42,7 +41,7 @@ The sidebar is organized into a clean 3-level taxonomy:
 ## Key Features
 
 - **100% Offline & `file://` Compatible**: Zero server, zero build step, and no package manager required. Opens instantly in any modern browser (Safari, Chrome, Firefox, Edge).
-- **Instant Live Search**: Press `/` anywhere to focus the search bar and filter across all 75 topics and deep-dive sub-sections in real time.
+- **Instant Live Search**: Press `/` anywhere to focus the search bar and filter across all 68 topics and deep-dive sub-sections in real time.
 - **Space-Optimized Architecture Cards**: Clean cards with embedded SVG/WebP architecture diagrams, schemas, and API definitions.
 - **Code & Schema Copy Buttons**: One-click copy with automatic fallback support for `file://` environments.
 - **Mobile Responsive Drawer**: Off-canvas drawer with smooth slide-in, blurred backdrop overlay, and keyboard accessibility (`Escape`).
