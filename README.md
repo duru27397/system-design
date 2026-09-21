@@ -1,116 +1,59 @@
-# System Design - Hello Interview Complete Guide
+# System Design Cheat Sheet
 
-Comprehensive system design interview preparation materials, complete problem breakdowns, deep-dives, architecture patterns, and real-world case studies.
+A compact, dependency-free interactive revision cheat sheet for System Design featuring a 3-level hierarchical navigation tree (Category $\to$ Topic $\to$ Sub-Section/Deep Dive), LeetCode Monaco editor syntax highlighting, instant search, and discrete non-scrolling page views across six core domains:
 
-All content preserved with high-level architectures, deep-dive solutions, API designs, data models, and diagrams.
-
-## ⚡ Interactive Web Application
-
-This repository includes a standalone, dependency-free interactive web application modeled after the LeetCode / IDE dark theme:
-
-- **Launch instantly**: Double-click `index.html` in Finder or run:
-  ```bash
-  open index.html
-  ```
-- **100% Offline**: Works directly from local `file://` paths in Safari, Chrome, Firefox, and Edge with zero build step or server required.
-- **3-Level Tree Navigation**: Browse all 6 categories, 75 topics, and deep-dive sub-sections effortlessly.
-- **Instant Search**: Press `/` to search across all 75 system design guides and topics.
-- **Architecture Diagrams & Code Copy**: Preserved high-resolution diagrams and one-click copy buttons for schemas and snippets.
+1. **System Design in a Hurry** (7 topics: Delivery framework, core concepts, key technologies, patterns, problem breakdowns)
+2. **Core Concepts** (9 topics: Networking essentials, API design, data modeling, database indexing, caching, sharding, consistent hashing, CAP theorem, numbers to know)
+3. **System Design Patterns** (7 topics: Realtime updates, dealing with contention, multi-step processes, scaling reads/writes, large blobs, long-running tasks)
+4. **Technology Deep Dives** (14 topics: Kafka, Redis, Cassandra, DynamoDB, Postgres, Elasticsearch, Flink, ZooKeeper, Vector DBs, Time-series DBs, CDC)
+5. **Problem Breakdowns** (32 end-to-end architectures: Yelp, Instagram, Uber, WhatsApp, LeetCode, YouTube, Ticketmaster, Distributed Cache, Rate Limiter, etc.)
+6. **Real-World Architecture** (6 production case studies: Shopify, Discord, Slack, Figma, Spotify, Meta)
 
 ---
 
-## Table of Contents
+## Structure
 
-### 🚀 System Design in a Hurry
+```text
+.
+├── AGENTS.md                  # Comprehensive design system & agent working rules
+├── README.md                  # Overview & guide
+├── index.html                 # Primary single-page entry point with pre-rendered page views
+├── system_design.html         # Direct alias of index.html for consistency with dsa_revision.html
+└── assets/
+    ├── favicon.svg            # Distributed systems nodes SVG favicon
+    ├── css/
+    │   └── system-design.css  # Dark LeetCode-style theme, responsive layout & 3-level tree styles
+    └── js/
+        └── system-design.js   # Tree navigation, page switching, search filter, copy logic & drawer controls
+```
 
-- [Introduction](in-a-hurry/introduction.md)
-- [How to Prepare for System Design Interviews](in-a-hurry/how-to-prepare.md)
-- [Delivery Framework](in-a-hurry/delivery.md)
-- [Core Concepts](in-a-hurry/core-concepts.md)
-- [Key Technologies](in-a-hurry/key-technologies.md)
-- [Common Patterns](in-a-hurry/patterns.md)
-- [Breakdowns of Popular System Design Questions](in-a-hurry/problem-breakdowns.md)
+---
 
-### 🧱 Core Concepts
+## Navigation Hierarchy (A $\to$ B $\to$ C)
 
-- [Networking Essentials](core-concepts/networking-essentials.md)
-- [API Design](core-concepts/api-design.md)
-- [Data Modeling](core-concepts/data-modeling.md)
-- [Database Indexing](core-concepts/db-indexing.md)
-- [Caching](core-concepts/caching.md)
-- [Sharding](core-concepts/sharding.md)
-- [Consistent Hashing](core-concepts/consistent-hashing.md)
-- [CAP Theorem](core-concepts/cap-theorem.md)
-- [Numbers to Know](core-concepts/numbers-to-know.md)
+The sidebar is organized into a clean 3-level taxonomy:
 
-### 📐 System Design Patterns
+- **Level 1 (Category - A)**: System Design in a Hurry, Core Concepts, System Design Patterns, Technology Deep Dives, Problem Breakdowns, Real-World Architecture
+- **Level 2 (Topic / Problem - B)**: Specific problem or concept (e.g. Yelp, Instagram, Distributed Cache, Sharding, Kafka)
+- **Level 3 (Sub-Section / Deep Dive - C)**: Specific section anchors (e.g. Functional Requirements, Core Entities, API Design, High-Level Architecture, Potential Deep Dives, Final Design)
 
-- [Real-time Updates](patterns/realtime-updates.md)
-- [Dealing with Contention](patterns/dealing-with-contention.md)
-- [Multi-step Processes](patterns/multi-step-processes.md)
-- [Scaling Reads](patterns/scaling-reads.md)
-- [Scaling Writes](patterns/scaling-writes.md)
-- [Handling Large Blobs](patterns/large-blobs.md)
-- [Managing Long Running Tasks](patterns/long-running-tasks.md)
+---
 
-### 🔍 Technology Deep Dives
+## Key Features
 
-- [Redis](deep-dives/redis.md)
-- [Elasticsearch](deep-dives/elasticsearch.md)
-- [Kafka](deep-dives/kafka.md)
-- [API Gateway](deep-dives/api-gateway.md)
-- [Cassandra](deep-dives/cassandra.md)
-- [DynamoDB](deep-dives/dynamodb.md)
-- [PostgreSQL](deep-dives/postgres.md)
-- [Flink](deep-dives/flink.md)
-- [ZooKeeper](deep-dives/zookeeper.md)
-- [Proximity Search](deep-dives/proximity-search.md)
-- [Data Structures for Big Data](deep-dives/data-structures-for-big-data.md)
-- [Vector Databases](deep-dives/vector-databases.md)
-- [Time Series Databases](deep-dives/time-series-databases.md)
-- [Change Data Capture](deep-dives/change-data-capture.md)
+- **100% Offline & `file://` Compatible**: Zero server, zero build step, and no package manager required. Opens instantly in any modern browser (Safari, Chrome, Firefox, Edge).
+- **Instant Live Search**: Press `/` anywhere to focus the search bar and filter across all 75 topics and deep-dive sub-sections in real time.
+- **Space-Optimized Architecture Cards**: Clean cards with embedded SVG/WebP architecture diagrams, schemas, and API definitions.
+- **Code & Schema Copy Buttons**: One-click copy with automatic fallback support for `file://` environments.
+- **Mobile Responsive Drawer**: Off-canvas drawer with smooth slide-in, blurred backdrop overlay, and keyboard accessibility (`Escape`).
+- **Shareable Hash Routing**: Direct URL deep links support both page views and sub-technique anchors (e.g. `index.html#problem-breakdowns-yelp?sub=yelp-potential-deep-dives`).
 
-### 💡 System Design Problem Breakdowns
+---
 
-- [Bitly](problem-breakdowns/bitly.md)
-- [Dropbox](problem-breakdowns/dropbox.md)
-- [Yelp](problem-breakdowns/yelp.md)
-- [Local Delivery Service](problem-breakdowns/gopuff.md)
-- [Ticketmaster](problem-breakdowns/ticketmaster.md)
-- [Instagram](problem-breakdowns/instagram.md)
-- [FB News Feed](problem-breakdowns/fb-news-feed.md)
-- [Tinder](problem-breakdowns/tinder.md)
-- [LeetCode](problem-breakdowns/leetcode.md)
-- [WhatsApp](problem-breakdowns/whatsapp.md)
-- [Strava](problem-breakdowns/strava.md)
-- [Distributed Cache](problem-breakdowns/distributed-cache.md)
-- [Rate Limiter](problem-breakdowns/distributed-rate-limiter.md)
-- [Online Auction](problem-breakdowns/online-auction.md)
-- [YouTube](problem-breakdowns/youtube.md)
-- [Job Scheduler](problem-breakdowns/job-scheduler.md)
-- [FB Live Comments](problem-breakdowns/fb-live-comments.md)
-- [News Aggregator](problem-breakdowns/google-news.md)
-- [Price Tracking Service](problem-breakdowns/camelcamelcamel.md)
-- [Notification System](problem-breakdowns/notification-system.md)
-- [YouTube Top K](problem-breakdowns/top-k.md)
-- [Uber](problem-breakdowns/uber.md)
-- [Robinhood](problem-breakdowns/robinhood.md)
-- [Google Docs](problem-breakdowns/google-docs.md)
-- [Web Crawler](problem-breakdowns/web-crawler.md)
-- [Ad Click Aggregator](problem-breakdowns/ad-click-aggregator.md)
-- [FB Post Search](problem-breakdowns/fb-post-search.md)
-- [Payment System](problem-breakdowns/payment-system.md)
-- [Metrics Monitoring](problem-breakdowns/metrics-monitoring.md)
-- [Online Chess](problem-breakdowns/online-chess.md)
-- [ChatGPT](problem-breakdowns/chatgpt.md)
-- [Flash Sale](problem-breakdowns/flash-sale.md)
+## Open it
 
-### 🌍 Real-World Architecture (In the Wild)
+Open [index.html](index.html) or [system_design.html](system_design.html) directly in any web browser:
 
-- [How Shopify Moved Inventory Reservations from Redis to MySQL](in-the-wild/shopify-inventory-reservations.md)
-- [How Discord Moved Trillions of Messages to ScyllaDB](in-the-wild/discord-messages-scylladb.md)
-- [How Slack Put Kafka in Front of Its Redis Job Queue](in-the-wild/slack-job-queue.md)
-- [How Figma Built Multiplayer Editing on Simplified CRDTs](in-the-wild/figma-multiplayer.md)
-- [How Spotify Serves Point Queries from an Exabyte Data Lake](in-the-wild/spotify-data-lake-point-queries.md)
-- [5 Techniques Meta Uses to Scale a Database to Millions of Clients](in-the-wild/meta-zgateway-zippydb.md)
-
+```bash
+open index.html
+```
