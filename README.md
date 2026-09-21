@@ -16,8 +16,7 @@ A compact, dependency-free interactive revision cheat sheet for System Design fe
 .
 ├── AGENTS.md                  # Comprehensive design system & agent working rules
 ├── README.md                  # Overview & guide
-├── index.html                 # Primary single-page entry point with pre-rendered page views
-├── system_design.html         # Direct alias of index.html for consistency with dsa_revision.html
+├── system_design.html         # Primary single-page entry point with pre-rendered page views
 └── assets/
     ├── favicon.svg            # Distributed systems nodes SVG favicon
     ├── css/
@@ -45,14 +44,14 @@ The sidebar is organized into a clean 3-level taxonomy:
 - **Space-Optimized Architecture Cards**: Clean cards with embedded SVG/WebP architecture diagrams, schemas, and API definitions.
 - **Code & Schema Copy Buttons**: One-click copy with automatic fallback support for `file://` environments.
 - **Mobile Responsive Drawer**: Off-canvas drawer with smooth slide-in, blurred backdrop overlay, and keyboard accessibility (`Escape`).
-- **Shareable Hash Routing**: Direct URL deep links support both page views and sub-technique anchors (e.g. `index.html#problem-breakdowns-yelp?sub=yelp-potential-deep-dives`).
+- **Shareable Hash Routing**: Direct URL deep links support both page views and sub-technique anchors (e.g. `system_design.html#problem-breakdowns-yelp?sub=yelp-potential-deep-dives`).
 
 ---
 
 ## Open it
 
-Open [index.html](index.html) or [system_design.html](system_design.html) directly in any web browser:
+Open [system_design.html](system_design.html) directly in any web browser:
 
 ```bash
-open index.html
+open system_design.html
 ```

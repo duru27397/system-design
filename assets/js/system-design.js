@@ -46,8 +46,10 @@
       page.setAttribute("aria-hidden", isActive ? "false" : "true");
     });
 
-    // Reset window scroll to top
-    window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    // Reset window scroll to top unless subTargetId is being scrolled to
+    if (!subTargetId) {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    }
 
     // Update breadcrumb in topbar
     if (currentTopic && targetPage) {
@@ -72,8 +74,20 @@
     navItems.forEach((item) => {
       const href = item.getAttribute("href");
       const targetSub = item.dataset.targetSub;
-      const isActive = (href === `#${targetId}` && (!subTargetId || targetSub === subTargetId)) ||
-                       (!subTargetId && href === `#${targetId}`);
+      const isL3 = item.classList.contains("l3-link");
+
+      let isActive = false;
+      if (subTargetId) {
+        if (isL3) {
+          isActive = targetSub === subTargetId;
+        } else {
+          isActive = href === `#${targetId}`;
+        }
+      } else {
+        if (!isL3) {
+          isActive = href === `#${targetId}`;
+        }
+      }
 
       item.classList.toggle("active", isActive);
       item.setAttribute("aria-current", isActive ? "page" : "false");
@@ -88,17 +102,19 @@
       }
     });
 
-    // Handle subTargetId highlighting within page if specified
+    // Handle subTargetId highlighting within page with reflow delay
     if (subTargetId) {
-      const subElem = document.getElementById(subTargetId);
-      if (subElem) {
-        document.querySelectorAll(".highlighted").forEach((c) => c.classList.remove("highlighted"));
-        subElem.classList.add("highlighted");
-        subElem.scrollIntoView({ behavior: "smooth", block: "start" });
-        window.setTimeout(() => {
-          subElem.classList.remove("highlighted");
-        }, 2500);
-      }
+      setTimeout(() => {
+        const subElem = document.getElementById(subTargetId);
+        if (subElem) {
+          document.querySelectorAll(".highlighted").forEach((c) => c.classList.remove("highlighted"));
+          subElem.classList.add("highlighted");
+          subElem.scrollIntoView({ behavior: "smooth", block: "start" });
+          setTimeout(() => {
+            subElem.classList.remove("highlighted");
+          }, 2500);
+        }
+      }, 50);
     }
 
     if (updateUrl) {
@@ -109,7 +125,7 @@
     closeSidebar();
   };
 
-  // Toggle tree node expansion
+  // Toggle tree node expansion on chevron click
   document.querySelectorAll(".tree-toggle").forEach((btn) => {
     btn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -126,8 +142,22 @@
       const href = item.getAttribute("href");
       if (!href || !href.startsWith("#")) return;
       e.preventDefault();
+
       const targetId = href.slice(1);
       const subTargetId = item.dataset.targetSub || null;
+      const treeNode = item.closest(".tree-node");
+
+      // If clicking an L1 or L2 link, toggle or ensure expansion
+      if (item.classList.contains("l1-link")) {
+        treeNode?.classList.toggle("expanded");
+      } else if (item.classList.contains("l2-link")) {
+        if (item.classList.contains("active")) {
+          treeNode?.classList.toggle("expanded");
+        } else {
+          treeNode?.classList.add("expanded");
+        }
+      }
+
       showPage(targetId, true, subTargetId);
     });
   });
@@ -160,11 +190,9 @@
     const l1Nodes = document.querySelectorAll(".l1-node");
 
     if (!query) {
-      // Reset visibility
       document.querySelectorAll(".tree-node").forEach((node) => {
         node.style.display = "";
       });
-      // Collapse Level 3 by default, keep Level 1 expanded
       return;
     }
 

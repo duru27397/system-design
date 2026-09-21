@@ -16,8 +16,7 @@ This repository is a fast, dependency-free interactive guide and revision applic
 
 ## Project Shape & Key Files
 
-- `index.html`: Primary single-page entry point serving discrete page views (`.page-view`), 3-level tree navigation, topbar breadcrumbs, search, and mobile drawer backdrop.
-- `system_design.html`: Direct alias of `index.html` for consistency with `dsa_revision.html`.
+- `system_design.html`: Primary single-page entry point serving discrete page views (`.page-view`), 3-level tree navigation, topbar breadcrumbs, search, and mobile drawer backdrop.
 - `assets/css/system-design.css`: Modern dark theme matching LeetCode / IDE aesthetics, 3-level tree navigation, architecture card styling, code wraps, tables, and mobile responsive queries.
 - `assets/js/system-design.js`: Tree node expansion/collapse, discrete page switching, URL hash routing (`#<page-id>?sub=<anchor-id>`), live search filtering, copy buttons with `file://` fallback, and mobile drawer controls.
 - `assets/favicon.svg`: Distributed systems nodes SVG favicon.
