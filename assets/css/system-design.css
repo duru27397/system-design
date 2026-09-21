@@ -151,34 +151,6 @@ a:hover {
   letter-spacing: 0.05em;
 }
 
-/* Sidebar Search Box */
-.sidebar-search-box {
-  padding: 0.6rem 0.8rem;
-  border-bottom: 1px solid var(--border-soft);
-  background: rgba(0, 0, 0, 0.15);
-}
-
-.sidebar-search-input {
-  width: 100%;
-  padding: 0.45rem 0.75rem;
-  background: #131313;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  color: var(--text);
-  font-size: 0.85rem;
-  font-family: inherit;
-  outline: none;
-  transition: border-color 150ms ease, box-shadow 150ms ease;
-}
-
-.sidebar-search-input:focus {
-  border-color: var(--orange);
-  box-shadow: 0 0 0 2px rgba(255, 161, 22, 0.15);
-}
-
-.sidebar-search-input::placeholder {
-  color: var(--faint);
-}
 
 .nav-tree {
   flex: 1 1 auto;

@@ -16,9 +16,9 @@ This repository is a fast, dependency-free interactive guide and revision applic
 
 ## Project Shape & Key Files
 
-- `system_design.html`: Primary single-page entry point serving discrete page views (`.page-view`), 3-level tree navigation, topbar breadcrumbs, search, and mobile drawer backdrop.
+- `system_design.html`: Primary single-page entry point serving discrete page views (`.page-view`), 3-level tree navigation, topbar breadcrumbs, and mobile drawer backdrop.
 - `assets/css/system-design.css`: Modern dark theme matching LeetCode / IDE aesthetics, 3-level tree navigation, architecture card styling, code wraps, tables, and mobile responsive queries.
-- `assets/js/system-design.js`: Tree node expansion/collapse, discrete page switching, URL hash routing (`#<page-id>?sub=<anchor-id>`), live search filtering, copy buttons with `file://` fallback, and mobile drawer controls.
+- `assets/js/system-design.js`: Tree node expansion/collapse, discrete page switching, URL hash routing (`#<page-id>?sub=<anchor-id>`), copy buttons with `file://` fallback, and mobile drawer controls.
 - `assets/favicon.svg`: Distributed systems nodes SVG favicon.
 - `in-a-hurry/`: 7 foundational guides (Delivery Framework, Core Concepts, etc.).
 - `core-concepts/`: 9 foundational concept deep dives (Networking, Indexing, Sharding, CAP, etc.).
@@ -79,9 +79,8 @@ This repository is a fast, dependency-free interactive guide and revision applic
    - Attribute: `data-target-sub="<section-id>"` scrolls to and briefly highlights the target section.
 
 ### 4. Interactive Features
-- **Live Search**: Type into the sidebar search bar (or press `/`) to instantly filter across all 75 topics and subtopics.
 - **Copy Code**: Every architecture snippet, API schema, and code snippet features a copy button with automatic clipboard copy and `file://` fallback.
-- **Hash Routing**: Shareable URL hashes such as `index.html#problem-breakdowns-yelp` or `index.html#problem-breakdowns-yelp?sub=yelp-potential-deep-dives`.
+- **Hash Routing**: Shareable URL hashes such as `system_design.html#problem-breakdowns-yelp` or `system_design.html#problem-breakdowns-yelp?sub=yelp-potential-deep-dives`.
 - **Mobile Responsive Drawer**: On screens $\le 860\text{px}$, the sidebar slides off-canvas and opens with the `☰ Topics` button and a blurred backdrop.
 
 ---

@@ -1,6 +1,6 @@
 # System Design Cheat Sheet
 
-A compact, dependency-free interactive revision cheat sheet for System Design featuring a 3-level hierarchical navigation tree (Category $\to$ Topic $\to$ Sub-Section/Deep Dive), LeetCode Monaco editor syntax highlighting, instant search, and discrete non-scrolling page views across five core domains:
+A compact, dependency-free interactive revision cheat sheet for System Design featuring a 3-level hierarchical navigation tree (Category $\to$ Topic $\to$ Sub-Section/Deep Dive), LeetCode Monaco editor syntax highlighting, and discrete non-scrolling page views across five core domains:
 
 1. **Core Concepts** (9 topics: Networking essentials, API design, data modeling, database indexing, caching, sharding, consistent hashing, CAP theorem, numbers to know)
 2. **System Design Patterns** (7 topics: Realtime updates, dealing with contention, multi-step processes, scaling reads/writes, large blobs, long-running tasks)
@@ -40,7 +40,6 @@ The sidebar is organized into a clean 3-level taxonomy:
 ## Key Features
 
 - **100% Offline & `file://` Compatible**: Zero server, zero build step, and no package manager required. Opens instantly in any modern browser (Safari, Chrome, Firefox, Edge).
-- **Instant Live Search**: Press `/` anywhere to focus the search bar and filter across all 68 topics and deep-dive sub-sections in real time.
 - **Space-Optimized Architecture Cards**: Clean cards with embedded SVG/WebP architecture diagrams, schemas, and API definitions.
 - **Code & Schema Copy Buttons**: One-click copy with automatic fallback support for `file://` environments.
 - **Mobile Responsive Drawer**: Off-canvas drawer with smooth slide-in, blurred backdrop overlay, and keyboard accessibility (`Escape`).

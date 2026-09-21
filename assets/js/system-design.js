@@ -3,7 +3,6 @@
   const menuButton = document.getElementById("mobile-toggle");
   const sidebarBackdrop = document.getElementById("sidebar-backdrop");
   const currentTopic = document.getElementById("current-topic");
-  const searchInput = document.getElementById("sidebar-search");
   const pages = [...document.querySelectorAll(".page-view")];
   const navItems = [...document.querySelectorAll(".nav-item")];
 
@@ -171,59 +170,7 @@
       if (sidebar?.classList.contains("open")) {
         closeSidebar();
       }
-      if (searchInput && document.activeElement === searchInput) {
-        searchInput.value = "";
-        searchInput.dispatchEvent(new Event("input"));
-        searchInput.blur();
-      }
     }
-    // '/' to focus search
-    if (e.key === "/" && document.activeElement !== searchInput && !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)) {
-      e.preventDefault();
-      searchInput?.focus();
-    }
-  });
-
-  // Search filter across sidebar navigation
-  searchInput?.addEventListener("input", (e) => {
-    const query = e.target.value.toLowerCase().trim();
-    const l1Nodes = document.querySelectorAll(".l1-node");
-
-    if (!query) {
-      document.querySelectorAll(".tree-node").forEach((node) => {
-        node.style.display = "";
-      });
-      return;
-    }
-
-    l1Nodes.forEach((l1) => {
-      let l1Match = false;
-      const l2Nodes = l1.querySelectorAll(".l2-node");
-
-      l2Nodes.forEach((l2) => {
-        const l2Text = l2.querySelector(".l2-link")?.textContent.toLowerCase() || "";
-        const l3Links = l2.querySelectorAll(".l3-link");
-        let l2Match = l2Text.includes(query);
-
-        l3Links.forEach((l3) => {
-          const l3Text = l3.textContent.toLowerCase();
-          const l3Match = l3Text.includes(query);
-          l3.style.display = l3Match || l2Match ? "" : "none";
-          if (l3Match) l2Match = true;
-        });
-
-        l2.style.display = l2Match ? "" : "none";
-        if (l2Match) {
-          l1Match = true;
-          l2.classList.add("expanded");
-        }
-      });
-
-      l1.style.display = l1Match ? "" : "none";
-      if (l1Match) {
-        l1.classList.add("expanded");
-      }
-    });
   });
 
   // Copy button logic (preserves file:// fallback)
