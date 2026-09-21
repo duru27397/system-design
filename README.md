@@ -4,6 +4,19 @@ Comprehensive system design interview preparation materials, complete problem br
 
 All content preserved with high-level architectures, deep-dive solutions, API designs, data models, and diagrams.
 
+## ⚡ Interactive Web Application
+
+This repository includes a standalone, dependency-free interactive web application modeled after the LeetCode / IDE dark theme:
+
+- **Launch instantly**: Double-click `index.html` in Finder or run:
+  ```bash
+  open index.html
+  ```
+- **100% Offline**: Works directly from local `file://` paths in Safari, Chrome, Firefox, and Edge with zero build step or server required.
+- **3-Level Tree Navigation**: Browse all 6 categories, 75 topics, and deep-dive sub-sections effortlessly.
+- **Instant Search**: Press `/` to search across all 75 system design guides and topics.
+- **Architecture Diagrams & Code Copy**: Preserved high-resolution diagrams and one-click copy buttons for schemas and snippets.
+
 ---
 
 ## Table of Contents
