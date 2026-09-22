@@ -47,10 +47,28 @@ The sidebar is organized into a clean 3-level taxonomy:
 
 ---
 
-## Open it
+## Live Demo & GitHub Pages
 
-Open [system_design.html](system_design.html) directly in any web browser:
+- **Live URL**: [https://duru27397.github.io/system-design/](https://duru27397.github.io/system-design/)
+
+### Hosting on GitHub Pages
+This repository is pre-configured for zero-config GitHub Pages hosting:
+- `index.html` and `.nojekyll` are placed at the root.
+- An automated GitHub Actions workflow (`.github/workflows/deploy.yml`) is configured for CI/CD deployments.
+
+To enable GitHub Pages:
+1. Go to **Settings** $\rightarrow$ **Pages** on GitHub.
+2. Under **Build and deployment** $\rightarrow$ **Source**:
+   - Choose **GitHub Actions** (or **Deploy from a branch** $\to$ `main` $\to$ `/ (root)`).
+   - Save, and the site will be live at `https://duru27397.github.io/system-design/`.
+
+---
+
+## Open it Locally
+
+Open [index.html](index.html) or [system_design.html](system_design.html) directly in any web browser:
 
 ```bash
-open system_design.html
+open index.html
 ```
+
