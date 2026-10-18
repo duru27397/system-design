@@ -628,6 +628,12 @@
                 <span class="nav-title">Symmetric vs Asymmetric Encryption</span>
               </a>
 
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-asymmetric-keypairs-and-math">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Asymmetric Keys: Two Jobs &amp; Math</span>
+              </a>
+
+
               <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-digital-signatures-and-hashing">
                 <span class="leaf-dot">•</span>
                 <span class="nav-title">Digital Signatures &amp; Hashing</span>
@@ -7088,6 +7094,80 @@ Similarly, if Database 2 (at position 25) fails:</p>
 </tbody>
 </table>
 </div>
+
+
+<h2 id="security-asymmetric-keypairs-and-math">Asymmetric Keypairs: The Two Jobs &amp; Math (Basic)</h2>
+<p>Asymmetric cryptography uses mathematical keypairs (Public &amp; Private). Crucially, keypairs perform <strong>two completely opposite jobs</strong> depending on who holds which key:</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Purpose</th>
+<th>Goal</th>
+<th>Key Workflow</th>
+<th>Real-World Analogy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Encryption</strong><br/><span class="flow-pill flow-pill-success">Confidentiality</span></td>
+<td>Keep messages secret from eavesdroppers.</td>
+<td>Anyone locks with <strong>Public Key</strong> &rarr; Only recipient unlocks with <strong>Private Key</strong>.</td>
+<td>A bank's padlocked drop-box: anyone can drop a letter inside, but only the manager with the private key can open it.</td>
+</tr>
+<tr>
+<td><strong>2. Digital Signature</strong><br/><span class="flow-pill flow-pill-ca">Authenticity &amp; Integrity</span></td>
+<td>Prove the message is genuine and untampered.</td>
+<td>Sender signs hash with <strong>Private Key</strong> &rarr; Everyone verifies with <strong>Public Key</strong>.</td>
+<td>The King stamping a decree with his signet ring (private key). Anyone can verify the wax seal (public key), but only the King owns the ring.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h3>The Math &amp; Algorithms Behind Keypairs</h3>
+<p>Both algorithms rely on a <strong>Trapdoor One-Way Function</strong>: easy to compute in one direction, but computationally impossible to reverse without the private trapdoor key.</p>
+
+<div class="arch-zones-grid" style="margin: 1.2rem 0;">
+  <!-- RSA CARD -->
+  <div class="arch-zone zone-client">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">1. RSA (Prime Factorization)</span>
+      <span class="arch-tag tag-sec">Trapdoor: Factoring</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>The Core Math:</strong> Multiplying two huge primes <code>p &times; q = n</code> takes microseconds. But finding <code>p</code> and <code>q</code> given only <code>n</code> takes thousands of years.</li>
+      <li><strong>Modulus:</strong> <code>n = p &times; q</code>. Public exponent: <code>e</code>. Private exponent: <code>d</code>.</li>
+      <li><strong>Encryption / Decryption:</strong>
+        <br/>&bull; Encrypt: <code>C = M<sup>e</sup> mod n</code> (using Public <code>e</code>)
+        <br/>&bull; Decrypt: <code>M = C<sup>d</sup> mod n</code> (using Private <code>d</code>)
+      </li>
+      <li><strong>Digital Signing:</strong>
+        <br/>&bull; Sign: <code>S = H<sup>d</sup> mod n</code> (using Private <code>d</code>)
+        <br/>&bull; Verify: <code>H = S<sup>e</sup> mod n</code> (using Public <code>e</code>)
+      </li>
+    </ul>
+  </div>
+
+  <!-- ECC CARD -->
+  <div class="arch-zone zone-server">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">2. ECC / ECDSA (Elliptic Curves)</span>
+      <span class="arch-tag tag-post">Modern Standard</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>The Core Math:</strong> Points on a curve <code>y<sup>2</sup> = x<sup>3</sup> + ax + b (mod p)</code>. Multiplying a base point <code>G</code> by scalar <code>k</code> (<code>P = k &times; G</code>) is fast. Finding <code>k</code> from <code>P</code> and <code>G</code> is practically impossible (Discrete Logarithm Problem).</li>
+      <li><strong>Private Key:</strong> Random integer <code>k</code>.</li>
+      <li><strong>Public Key:</strong> Curve point <code>P = k &times; G</code>.</li>
+      <li><strong>Why ECC Wins in System Design:</strong>
+        <br/>&bull; A <strong>256-bit ECC key</strong> matches the strength of a <strong>3072-bit RSA key</strong>.
+        <br/>&bull; 10x faster TLS handshakes, lower CPU overhead, and smaller certificate payloads.
+      </li>
+    </ul>
+  </div>
+</div>
+
 
 <h2 id="security-digital-signatures-and-hashing">Digital Signatures &amp; Cryptographic Hashing</h2>
 <p>A common beginner confusion is the difference between <em>encryption</em> and <em>signing</em>:</p>
