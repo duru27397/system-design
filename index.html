@@ -24972,46 +24972,197 @@ To scale to <strong>100 Million token validations per second</strong>, resource 
 
 <h2 id="sso-high-level-design">High-Level Design &amp; Auth Flow</h2>
 
-<div class="code-wrap"><div class="code-header"><span>SSO &amp; OAuth 2.0 / OIDC Architecture Diagram</span><button class="copy-button" type="button">Copy</button></div><pre><code>+--------------------------------------------------------------------------+
-|                       IDENTITY PROVIDER (IdP)                            |
-|                                                                          |
-|  +-------------+   1. Redirect to /authorize    +---------------------+  |
-|  |             |-------------------------------&gt;|  Authorize Endpoint |  |
-|  |             |&lt;-- 2. Auth code (redirect) ---|  (PKCE &amp; SSO Cookie)   |  |
-|  |             |                                +----------+----------+  |
-|  |    User     |                                           |             |
-|  |   Browser   |                                +----------v----------+  |
-|  |             |                                |   Central Session   |  |
-|  |             |                                |   Store (Redis KV)  |  |
-|  +------+------+                                +---------------------+  |
-|         |                                                                |
-|         | 3. Code redirect                                               |
-|         v                                                                |
-|  +-------------+   4. Exchange code for tokens  +---------------------+  |
-|  |   Relying   |-------------------------------&gt;|   Token Endpoint    |  |
-|  | Party (RP)  |&lt;-- access_token (JWT) ---------| (Code verify + KMS) |  |
-|  | Client App  |    id_token + refresh_token    +----------+----------+  |
-|  +------+------+                                           |             |
-|         |                                                  | CDC Stream  |
-|         | 5. Call API (Bearer JWT)              +----------v----------+  |
-|         |                                       | Revocation Log      |  |
-|         |                                       | (Kafka / Event Bus) |  |
-|         |                                       +----------+----------+  |
-+---------|--------------------------------------------------|-------------+
-          |                                                  | Push Revocations
-          v                                                  v (jti + epoch)
-+--------------------------------------------------------------------------+
-|                        RESOURCE SERVERS (API FLEET)                      |
-|                                                                          |
-|  +---------------------------+       +--------------------------------+  |
-|  | Offline JWT Verification  |       | Local Revocation Set in RAM    |  |
-|  | - Check signature via JWKS|&lt;-----&gt;| - Bloom Filter front (O(1))    |  |
-|  | - Verify exp, iss, aud    |       | - In-memory Set (&lt;2 MB RAM)    |  |
-|  | - Check scopes in claims  |       | - Auto-evicts on token exp     |  |
-|  +---------------------------+       +--------------------------------+  |
-|             100M token validations/sec - ZERO network calls to IdP!      |
-+--------------------------------------------------------------------------+
-</code></pre></div>
+
+<div class="arch-diagram-wrap">
+  <div class="arch-header">
+    <div class="arch-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+        <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+        <line x1="6" y1="6" x2="6.01" y2="6"></line>
+        <line x1="6" y1="18" x2="6.01" y2="18"></line>
+      </svg>
+      <span>SSO &amp; OAuth 2.0 / OIDC Architecture Canvas</span>
+    </div>
+    <span class="arch-badge-live">Fleet-Scale System Design</span>
+  </div>
+
+  <div class="arch-canvas">
+    <!-- SVG Dataflow Connectors -->
+    <svg viewBox="0 0 900 280" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="flowGrad1" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#38bdf8"/>
+          <stop offset="100%" stop-color="#ffa116"/>
+        </linearGradient>
+        <linearGradient id="flowGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#ffa116"/>
+          <stop offset="100%" stop-color="#2dd4bf"/>
+        </linearGradient>
+        <marker id="arrowhead-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#38bdf8"/>
+        </marker>
+        <marker id="arrowhead-orange" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#ffa116"/>
+        </marker>
+        <marker id="arrowhead-cyan" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#2dd4bf"/>
+        </marker>
+        <marker id="arrowhead-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#c084fc"/>
+        </marker>
+      </defs>
+
+      <!-- Path 1: Browser to IdP /authorize -->
+      <path d="M 230 65 L 420 65" stroke="#38bdf8" stroke-width="2.5" stroke-dasharray="6,4" fill="none" marker-end="url(#arrowhead-blue)"/>
+      <text x="325" y="52" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle">1. /authorize (PKCE)</text>
+
+      <!-- Path 2: Auth Code Redirect back -->
+      <path d="M 420 85 L 230 85" stroke="#38bdf8" stroke-width="2.5" fill="none" marker-end="url(#arrowhead-blue)"/>
+      <text x="325" y="103" fill="#94a3b8" font-size="11" font-weight="600" text-anchor="middle">2. 302 Callback + code</text>
+
+      <!-- Path 3: RP to IdP /token -->
+      <path d="M 230 195 L 420 195" stroke="#ffa116" stroke-width="2.5" fill="none" marker-end="url(#arrowhead-orange)"/>
+      <text x="325" y="185" fill="#ffa116" font-size="11" font-weight="600" text-anchor="middle">3. POST /token (code + verifier)</text>
+
+      <!-- Path 4: Tokens issued -->
+      <path d="M 420 215 L 230 215" stroke="#ffa116" stroke-width="2.5" stroke-dasharray="6,4" fill="none" marker-end="url(#arrowhead-orange)"/>
+      <text x="325" y="233" fill="#ffa116" font-size="11" font-weight="600" text-anchor="middle">4. JWT Access + Refresh</text>
+
+      <!-- Path 5: RP to Resource Server Fleet -->
+      <path d="M 125 250 L 125 270 Q 125 275 140 275 L 750 275 Q 765 275 765 260 L 765 240" stroke="#2dd4bf" stroke-width="2.5" fill="none" marker-end="url(#arrowhead-cyan)"/>
+      <text x="450" y="270" fill="#2dd4bf" font-size="11" font-weight="600" text-anchor="middle">5. 100M QPS API Calls (Authorization: Bearer &lt;JWT&gt;)</text>
+
+      <!-- Path 6: CDC Revocations Stream -->
+      <path d="M 720 120 L 750 120 L 750 150" stroke="#c084fc" stroke-width="2.5" stroke-dasharray="4,4" fill="none" marker-end="url(#arrowhead-purple)"/>
+      <text x="760" y="132" fill="#c084fc" font-size="11" font-weight="600">6. Stream Revoked JTI</text>
+    </svg>
+
+    <!-- Zone Cards Grid -->
+    <div class="arch-zones-grid">
+      <!-- CLIENT ZONE -->
+      <div class="arch-zone zone-client">
+        <div class="arch-zone-header">
+          <span class="arch-zone-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+            Client &amp; Browser Zone
+          </span>
+          <span class="arch-tag tag-get">User Tier</span>
+        </div>
+        <div class="arch-elements-stack">
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">👤 User Agent (Browser / Mobile)</span>
+              <span class="arch-tag tag-get">Cookies / PKCE</span>
+            </div>
+            <div class="arch-card-desc">Holds central SSO cookie (<code>sso_session</code>). Generates cryptographic <code>code_verifier</code> and SHA-256 <code>code_challenge</code>.</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">📱 Relying Party (RP Backend)</span>
+              <span class="arch-tag tag-sec">Spotify / App Server</span>
+            </div>
+            <div class="arch-card-desc">Confidential client server. Executes back-channel code exchange for tokens. Stores rotating refresh token securely server-side.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- IdP ZONE -->
+      <div class="arch-zone zone-idp">
+        <div class="arch-zone-header">
+          <span class="arch-zone-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            Identity Provider (IdP) Core
+          </span>
+          <span class="arch-tag tag-sec">Single Trust Root</span>
+        </div>
+        <div class="arch-elements-row">
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">🔑 /authorize Gateway</span>
+              <span class="arch-tag tag-get">GET</span>
+            </div>
+            <div class="arch-card-desc">Validates client ID, redirect URI allowlist, and PKCE challenge. If SSO session cookie is valid, issues auth code immediately without re-prompting!</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">⚡ Central Session Store</span>
+              <span class="arch-tag tag-db">Redis Cluster</span>
+            </div>
+            <div class="arch-card-desc">Tracks 200M active SSO sessions. Sub-millisecond lookup on SSO cookie hash. Native TTL auto-expiration.</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">🎟️ /token Endpoint</span>
+              <span class="arch-tag tag-post">POST</span>
+            </div>
+            <div class="arch-card-desc">Verifies single-use authorization code and PKCE verifier. Calls KMS to sign JWT access tokens. Handles silent token refreshes.</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">🔐 Cloud KMS / HSM Vault</span>
+              <span class="arch-tag tag-sec">RS256 / ES256</span>
+            </div>
+            <div class="arch-card-desc">Holds asymmetric master private keys. Keys never touch application server RAM. Publishes public keys via <code>/.well-known/jwks.json</code>.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESOURCE SERVER FLEET ZONE -->
+      <div class="arch-zone zone-rs">
+        <div class="arch-zone-header">
+          <span class="arch-zone-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+            Resource Server Fleet (Microservice APIs)
+          </span>
+          <span class="arch-tag tag-post">100M Validations/sec &bull; Offline</span>
+        </div>
+        <div class="arch-elements-row">
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">⚡ Offline JWT Validator</span>
+              <span class="arch-tag tag-sec">Cached JWKS</span>
+            </div>
+            <div class="arch-card-desc">Verifies RS256/ES256 signature using cached public keys. Validates <code>exp</code>, <code>iss</code>, <code>aud</code>, and <code>scopes</code> in &lt; 0.1ms CPU time. Zero IdP calls!</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">🛡️ In-Memory Bloom Filter</span>
+              <span class="arch-tag tag-stream">Tier-1 Revocation</span>
+            </div>
+            <div class="arch-card-desc">O(1) in-memory check for revoked <code>jti</code> tokens. Zero false negatives: answers "definitely not revoked" instantly for 99.99% of requests.</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">🗄️ In-Memory Revocation Set</span>
+              <span class="arch-tag tag-db">&lt; 2 MB RAM</span>
+            </div>
+            <div class="arch-card-desc">Holds active revoked <code>{jti, exp}</code> entries received via real-time Kafka stream. Background worker auto-evicts expired tokens every minute.</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-top">
+              <span class="arch-card-name">📡 Kafka Revocation Consumer</span>
+              <span class="arch-tag tag-stream">CDC Pipeline</span>
+            </div>
+            <div class="arch-card-desc">Streams explicit token revocation events from IdP to every API server within 1-2 seconds of user logout or password change.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <h3>End-to-End Authentication Dance (Step-by-Step):</h3>
 <ol>
@@ -25122,19 +25273,25 @@ Because access tokens live for only 10-15 minutes, <strong>only tokens revoked w
 
 <p>Refresh tokens live for days or months. If an attacker steals a static refresh token from a database leak or compromised mobile backup, they could maintain silent access indefinitely. We eliminate this with <strong>Refresh Token Rotation &amp; Replay Detection</strong>.</p>
 
-<div class="code-wrap"><div class="code-header"><span>Refresh Token Chain &amp; Theft Detection</span><button class="copy-button" type="button">Copy</button></div><pre><code>Normal Flow:
-[RT_1] --(used)---&gt; Issues [RT_2] --(used)---&gt; Issues [RT_3]
- (marked used)                       (marked used)
 
-Theft / Replay Attack Scenario:
-1. Attacker steals [RT_1] from device storage.
-2. Legitimate user uses [RT_1] -&gt; IdP issues [RT_2], marks [RT_1] as USED.
-3. Attacker later attempts to use stolen [RT_1].
-4. IdP checks DB: [RT_1].used == TRUE!
-   ===&gt; REPLAY DETECTED!
-   ===&gt; IdP immediately revokes all tokens matching family_id!
-   ===&gt; Both legitimate user and attacker are logged out. Account secured!
-</code></pre></div>
+<div class="chain-grid">
+  <div class="chain-node used">
+    <span class="chain-status status-used">Step 1: Used &amp; Burned</span>
+    <h4 style="margin: 0.25rem 0 0.4rem; font-size: 0.95rem; color: #e2e8f0;">Refresh Token 1 (RT-1)</h4>
+    <p style="font-size: 0.8rem; color: var(--muted); margin: 0;">Exchanged at IdP for RT-2. Database flags <code>used = true</code>. Single-use token is now permanently invalid.</p>
+  </div>
+  <div class="chain-node active">
+    <span class="chain-status status-active">Step 2: Active Token</span>
+    <h4 style="margin: 0.25rem 0 0.4rem; font-size: 0.95rem; color: #e2e8f0;">Refresh Token 2 (RT-2)</h4>
+    <p style="font-size: 0.8rem; color: var(--muted); margin: 0;">Currently held by legitimate client app. Shares the same immutable <code>family_id</code> with RT-1.</p>
+  </div>
+  <div class="chain-node compromised">
+    <span class="chain-status status-alarm">🚨 Tripwire: Theft Detected</span>
+    <h4 style="margin: 0.25rem 0 0.4rem; font-size: 0.95rem; color: #ef4444;">Attacker Replays RT-1</h4>
+    <p style="font-size: 0.8rem; color: #fca5a5; margin: 0;">IdP detects an already-used token was submitted! Atomically invalidates all tokens in <code>family_id</code>, locking out the attacker instantly!</p>
+  </div>
+</div>
+
 
 <ul>
 <li><strong>Single-Use Tokens:</strong> Every refresh token can only be exchanged once. The moment it is presented to the <code>/token</code> endpoint, the IdP invalidates it and issues a fresh one.</li>
@@ -25150,23 +25307,22 @@ Theft / Replay Attack Scenario:
 <p>Private signing keys <strong>never exist in application memory</strong>. The token endpoint passes the JWT payload to Cloud KMS/HSM via an internal RPC: <code>kms.sign(payload, key_version)</code>. If an attacker gains remote code execution on the IdP web servers, they cannot dump the private key!</p>
 
 <h4>2. Overlapping Dual-Key Rotation Protocol:</h4>
-<div class="code-wrap"><div class="code-header"><span>Graceful Key Rotation Timeline</span><button class="copy-button" type="button">Copy</button></div><pre><code>Phase 1 (Publish Key 2):
-- Generate Keypair K2.
-- Publish BOTH K1 and K2 in /.well-known/jwks.json:
-  { "keys": [ { "kid": "k1", ... }, { "kid": "k2", ... } ] }
-- Continue signing new tokens using K1.
-- Wait for all Resource Servers to refresh their JWKS cache (e.g. 2 hours).
 
-Phase 2 (Switch Signing to Key 2):
-- Update IdP token minting to sign new JWTs with K2 (header kid: "k2").
-- In-flight tokens signed with K1 continue to verify because K1 is still in JWKS.
+<div style="margin: 1.2rem 0; background: #16171d; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem;">
+  <div class="timeline-step">
+    <div class="timeline-title">Phase 1: Overlapping JWKS Publishing (Dual Keys)</div>
+    <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Generate new keypair $K_2$. Publish <strong>both</strong> $K_1$ and $K_2$ public keys at <code>/.well-known/jwks.json</code>. Continue signing new JWTs with $K_1$ until all resource servers refresh their JWKS cache (e.g. 2 hours).</p>
+  </div>
+  <div class="timeline-step">
+    <div class="timeline-title">Phase 2: Switch Token Minting to Key 2</div>
+    <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Update the IdP token endpoint to sign newly minted JWTs using $K_2$ (header <code>kid: "k2"</code>). In-flight tokens signed with $K_1$ continue to verify successfully because $K_1$ is still present in the JWKS.</p>
+  </div>
+  <div class="timeline-step" style="border-left-color: var(--easy); margin-bottom: 0;">
+    <div class="timeline-title" style="color: var(--easy);">Phase 3: Retire &amp; Archive Key 1</div>
+    <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">Wait for the maximum access token TTL (e.g., 15 minutes). Every live token signed by $K_1$ has naturally expired! Safely purge $K_1$ from the active JWKS. <strong>Zero failed requests, zero downtime!</strong></p>
+  </div>
+</div>
 
-Phase 3 (Retire Key 1):
-- Wait max access token TTL (e.g. 15 minutes).
-- Now, ZERO live tokens signed with K1 exist in the wild!
-- Safely remove K1 from JWKS and archive in KMS.
-===&gt; Zero failed requests, zero downtime!
-</code></pre></div>
 
 <h2 id="sso-api-design-and-data-models">API Design &amp; Data Schemas</h2>
 
