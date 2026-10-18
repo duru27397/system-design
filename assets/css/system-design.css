@@ -1108,3 +1108,212 @@ img {
 .flow-pill-success { background: rgba(0, 184, 163, 0.15); color: var(--easy); border: 1px solid rgba(0, 184, 163, 0.3); }
 .flow-pill-danger { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
 .flow-pill-ca { background: rgba(192, 132, 252, 0.15); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3); }
+
+
+/* ==========================================================================
+   PKI / TLS Interactive Architecture Board (Ultra-Brief Visual)
+   ========================================================================== */
+.pki-interactive-board {
+  margin: 1.8rem 0;
+  background: #14151a;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.pki-node-box {
+  background: #1a1b22;
+  border: 1px solid #2d313d;
+  border-radius: 10px;
+  padding: 1rem 1.25rem;
+  position: relative;
+  transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.pki-node-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.pki-node-ca {
+  border-top: 3px solid #c084fc;
+  background: rgba(30, 24, 42, 0.6);
+  max-width: 580px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.pki-node-client {
+  border-top: 3px solid var(--blue);
+  background: rgba(20, 30, 45, 0.6);
+  flex: 1;
+}
+
+.pki-node-website {
+  border-top: 3px solid var(--easy);
+  background: rgba(18, 35, 30, 0.6);
+  flex: 1;
+}
+
+.pki-node-hacker {
+  border-top: 3px solid #ef4444;
+  background: rgba(45, 18, 22, 0.6);
+  border-color: #5c2429;
+  flex: 1;
+}
+
+.pki-node-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  display: inline-block;
+  margin-bottom: 0.35rem;
+}
+
+.badge-ca { background: rgba(192, 132, 252, 0.2); color: #c084fc; border: 1px solid rgba(192, 132, 252, 0.3); }
+.badge-client { background: rgba(56, 189, 248, 0.2); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.3); }
+.badge-website { background: rgba(0, 184, 163, 0.2); color: #00b8a3; border: 1px solid rgba(0, 184, 163, 0.3); }
+.badge-hacker { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+.pki-node-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pki-node-list {
+  margin: 0;
+  padding-left: 1.15rem;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+.pki-node-list li {
+  margin-bottom: 0.25rem;
+}
+
+.pki-middle-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.25fr 1fr;
+  gap: 1.25rem;
+  align-items: center;
+}
+
+@media (max-width: 900px) {
+  .pki-middle-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pki-flow-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.pki-flow-arrow {
+  background: #101115;
+  border: 1px solid #282a35;
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.pki-seq-badge {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  flex-shrink: 0;
+}
+
+.badge-seq-ca {
+  background: rgba(192, 132, 252, 0.2);
+  color: #c084fc;
+  border-color: rgba(192, 132, 252, 0.4);
+}
+
+.badge-seq-web {
+  background: rgba(0, 184, 163, 0.2);
+  color: #00b8a3;
+  border-color: rgba(0, 184, 163, 0.4);
+}
+
+.badge-seq-danger {
+  background: rgba(239, 68, 68, 0.25);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.pki-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap: 1.25rem;
+  align-items: center;
+  background: rgba(239, 68, 68, 0.03);
+  border: 1px dashed rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .pki-bottom-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pki-mitm-arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.pki-rejection-banner {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+}
+
+.pki-rejection-banner .rejection-badge {
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #ef4444;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.pki-rejection-banner p {
+  font-size: 0.8rem;
+  color: #fca5a5;
+  margin: 0;
+  line-height: 1.45;
+}

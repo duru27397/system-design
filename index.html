@@ -7118,90 +7118,102 @@ Similarly, if Database 2 (at position 25) fails:</p>
 <p>The interactive diagram below visualizes the exact workflow of Certificate Issuance, Client Handshake, and why a Man-in-the-Middle (MITM) attacker is mathematically barred from impersonating the target website.</p>
 
 <!-- PKI & MITM VISUAL DIAGRAM COMPONENT -->
-<div class="pki-diagram-wrap">
-  <div class="arch-header">
+
+<!-- PKI & MITM PROPER VISUAL HTML ELEMENTS BOARD (ULTRA-BRIEF) -->
+<div class="pki-interactive-board">
+  <div class="arch-header" style="background: transparent; border-bottom: 1px solid #282a35; padding: 0 0 0.85rem 0;">
     <div class="arch-title">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
         <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
       </svg>
-      <span>PKI Certificate Issuance &amp; Man-in-the-Middle (MITM) Defense</span>
+      <span>PKI Architecture &amp; Man-in-the-Middle (MITM) Defense</span>
     </div>
-    <span class="flow-pill flow-pill-success">Cryptographically Enforced</span>
+    <span class="flow-pill flow-pill-success">Sequence Flow [1] &rarr; [6]</span>
   </div>
 
-  <div class="arch-canvas">
-    <!-- SVG Vector Flow Canvas -->
-    <svg viewBox="0 0 950 360" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-          <polygon points="0 0, 8 4, 0 8" fill="#00b8a3"/>
-        </marker>
-        <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-          <polygon points="0 0, 8 4, 0 8" fill="#c084fc"/>
-        </marker>
-        <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-          <polygon points="0 0, 8 4, 0 8" fill="#38bdf8"/>
-        </marker>
-        <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-          <polygon points="0 0, 8 4, 0 8" fill="#ef4444"/>
-        </marker>
-      </defs>
+  <!-- TOP: CA (Certification Authority) -->
+  <div class="pki-ca-row">
+    <div class="pki-node-box pki-node-ca">
+      <div class="pki-node-badge badge-ca">Root of Trust</div>
+      <div class="pki-node-title">🏛️ CA (Certification Authority)</div>
+      <ul class="pki-node-list">
+        <li><strong>Checks Website:</strong> Verifies domain ownership &amp; legal identity docs.</li>
+        <li><strong>Signs Ciphertext:</strong> Issues SSL/TLS certificate signed with <code>ca_private_key</code>.</li>
+        <li><strong>Certificate Payload:</strong> Contains website metadata + <code>website_public_key</code>.</li>
+      </ul>
+    </div>
+  </div>
 
-      <!-- Step 1: Website requests CRT from CA -->
-      <path d="M 720 120 L 580 65" stroke="#c084fc" stroke-width="2.5" fill="none" marker-end="url(#arrow-purple)"/>
-      <text x="680" y="78" fill="#c084fc" font-size="11" font-weight="700">1. Request CRT / CSR</text>
+  <!-- MIDDLE: Client <---> Flow Arrows <---> Website -->
+  <div class="pki-middle-grid">
+    <!-- LEFT: Client -->
+    <div class="pki-node-box pki-node-client">
+      <div class="pki-node-badge badge-client">Verifier</div>
+      <div class="pki-node-title">💻 Client (Browser / OS)</div>
+      <ul class="pki-node-list">
+        <li><strong>Pre-installed Root Store:</strong> Ships with all trusted CAs' public keys (<code>ca_public_key</code>).</li>
+        <li><strong>Verifies Signature:</strong> Decrypts/validates SSL/TLS certificate using <code>ca_public_key</code>.</li>
+        <li><strong>Safe Key Extraction:</strong> Extracts trusted <code>website_public_key</code> to establish encrypted session.</li>
+      </ul>
+    </div>
 
-      <!-- Step 2: CA issues signed Certificate to Website -->
-      <path d="M 580 85 L 720 140" stroke="#c084fc" stroke-width="2.5" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-purple)"/>
-      <text x="690" y="112" fill="#c084fc" font-size="11" font-weight="600">2. Signed SSL/TLS Cert (ca_private_key)</text>
+    <!-- CENTER: Sequential Flow Arrows -->
+    <div class="pki-flow-column">
+      <div class="pki-flow-arrow" style="border-left: 3px solid #c084fc;">
+        <span class="pki-seq-badge badge-seq-ca">1</span>
+        <span><strong>Request CRT:</strong> Website asks CA for cert &nearr;</span>
+      </div>
+      <div class="pki-flow-arrow" style="border-left: 3px solid #c084fc;">
+        <span class="pki-seq-badge badge-seq-ca">2</span>
+        <span><strong>Signed Cert:</strong> CA signs with <code>ca_private_key</code> &searr;</span>
+      </div>
+      <div class="pki-flow-arrow" style="border-left: 3px solid #38bdf8;">
+        <span class="pki-seq-badge">3</span>
+        <span><strong>Request Public Key:</strong> Client connects &rarr;</span>
+      </div>
+      <div class="pki-flow-arrow" style="border-left: 3px solid #00b8a3;">
+        <span class="pki-seq-badge badge-seq-web">4</span>
+        <span><strong>Returns Signed Cert:</strong> (has <code>website_pubkey</code>) &larr;</span>
+      </div>
+    </div>
 
-      <!-- Step 3: Client requests Public Key from Website -->
-      <path d="M 270 125 L 680 125" stroke="#38bdf8" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)"/>
-      <text x="475" y="115" fill="#38bdf8" font-size="11" font-weight="700" text-anchor="middle">3. ClientHello (Request Public Key / Cert)</text>
+    <!-- RIGHT: Website -->
+    <div class="pki-node-box pki-node-website">
+      <div class="pki-node-badge badge-website">Origin Server</div>
+      <div class="pki-node-title">🌐 Website (Origin Server)</div>
+      <ul class="pki-node-list">
+        <li><strong>OpenSSL Keypair:</strong> Generates <code>(website_private_key, website_public_key)</code>.</li>
+        <li><strong>Secret Storage:</strong> Stores <code>website_private_key</code> safely in vault/KMS.</li>
+        <li><strong>Presents Cert:</strong> Delivers CA-signed certificate to connecting clients.</li>
+      </ul>
+    </div>
+  </div>
 
-      <!-- Step 4: Website returns Signed Certificate to Client -->
-      <path d="M 680 155 L 270 155" stroke="#00b8a3" stroke-width="2.5" fill="none" marker-end="url(#arrow-green)"/>
-      <text x="475" y="172" fill="#00b8a3" font-size="11" font-weight="700" text-anchor="middle">4. Return Signed Cert (metadata + website_public_key)</text>
+  <!-- BOTTOM: Hacker MITM & Client Defense -->
+  <div class="pki-bottom-grid">
+    <div class="pki-node-box pki-node-hacker">
+      <div class="pki-node-badge badge-hacker">Adversary</div>
+      <div class="pki-node-title">🦹 Hacker MITM (Man in the Middle)</div>
+      <ul class="pki-node-list">
+        <li>Wears a "mask" to convince client he is the original website.</li>
+        <li>Attempts to intercept traffic &amp; return a counterfeit certificate.</li>
+      </ul>
+    </div>
 
-      <!-- Step 5: MITM Hacker Interception attempt -->
-      <path d="M 240 280 L 240 220" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4,4" fill="none" marker-end="url(#arrow-red)"/>
-      <text x="130" y="250" fill="#ef4444" font-size="11" font-weight="700">5. Wrong/Spoofed Key</text>
+    <div class="pki-mitm-arrows">
+      <div class="pki-flow-arrow" style="border-left: 3px solid #ef4444;">
+        <span class="pki-seq-badge badge-seq-danger">5</span>
+        <span style="color: #fca5a5;"><strong>Spoof Attempt:</strong> Hacker returns Fake Certificate to Client &nwarr;</span>
+      </div>
+      <div class="pki-rejection-banner">
+        <div class="rejection-badge">❌ [6] CLIENT REJECTS &amp; TERMINATES CONNECTION</div>
+        <p>Client cannot decrypt/verify the signature using <code>ca_public_key</code> because CA never signed it with <code>ca_private_key</code>! Client instantly rejects the connection (<code>NET::ERR_CERT_AUTHORITY_INVALID</code>).</p>
+      </div>
+    </div>
+  </div>
+</div>
 
-      <!-- Step 6: Fake Cert returned by Hacker -->
-      <path d="M 260 220 L 260 280" stroke="#ef4444" stroke-width="2.5" fill="none" marker-end="url(#arrow-red)"/>
-      <text x="270" y="250" fill="#ef4444" font-size="11" font-weight="700">Return Fake Cert</text>
-
-      <!-- Block indicator (Crossed Lines) -->
-      <line x1="285" y1="230" x2="315" y2="250" stroke="#ef4444" stroke-width="3"/>
-      <line x1="315" y1="230" x2="285" y2="250" stroke="#ef4444" stroke-width="3"/>
-      <text x="325" y="244" fill="#ef4444" font-size="11" font-weight="700">BLOCKED: CA Signature Mismatch!</text>
-    </svg>
-
-    <!-- Visual Entity Cards -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
-      
-      <!-- CA CARD -->
-      <div class="arch-zone zone-ca" style="grid-column: 1 / -1;">
-        <div class="arch-zone-header">
-          <span class="arch-zone-title">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-            🏛️ Certification Authority (CA) — The Root of Trust
-          </span>
-          <span class="flow-pill flow-pill-ca">Signs with ca_private_key</span>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem;">
-          <div class="arch-card">
-            <div class="arch-card-name">1. Domain &amp; Legal Verification</div>
-            <div class="arch-card-desc">Verifies website ownership via automated ACME DNS/HTTP challenges or legal documentation before issuing certificates.</div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-card-desc"><strong>Signs Certificate:</strong> Computes hash of website metadata + <code>website_public_key</code> and encrypts it using the secret <code>ca_private_key</code>.</div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-card-desc"><strong>Public Trust:</strong> The corresponding <code>ca_public_key</code> is permanently embedded in macOS, Windows, iOS, Android, and web browsers worldwide.</div>
-          </div>
-        </div>
       </div>
 
       <!-- CLIENT CARD -->
