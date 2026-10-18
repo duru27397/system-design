@@ -639,9 +639,14 @@
                 <span class="nav-title">Digital Signatures &amp; Hashing</span>
               </a>
 
-              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-signing-process-shattered-glass-analogy">
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-signing-process-magic-metal-analogy">
                 <span class="leaf-dot">•</span>
-                <span class="nav-title">Signing: Shattered Glass Analogy</span>
+                <span class="nav-title">Signing: Magic Metal Rock Analogy</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-how-jwt-and-tls-certificates-work">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">How JWTs &amp; SSL/TLS Use This</span>
               </a>
 
 
@@ -7192,180 +7197,549 @@ Similarly, if Database 2 (at position 25) fails:</p>
 </code></pre></div>
 
 
-<h2 id="security-signing-process-shattered-glass-analogy">The Signing Process: The Shattered Glass Seal Analogy (Visual)</h2>
-<p>To truly understand how digital signatures work without getting lost in mathematical abstraction, visualize the <strong>Shattered Glass Seal</strong>: the mechanical essence of asymmetric keypairs and the one-way trapdoor.</p>
+<!-- ========================================================
+     THE MAGIC METAL ROCK ANALOGY: IMAGE SEQUENCE & REAL-WORLD JWT/TLS
+     ======================================================== -->
+<a id="security-signing-process-shattered-glass-analogy"></a>
+<h2 id="security-signing-process-magic-metal-analogy">The Signing Process: The Magic Metal Rock Story (Visual Sequence)</h2>
+<p>
+  To truly understand how digital signatures work without getting tangled in mathematical formulas, visualize the <strong>Magic Metal Rock</strong>: the physical truth of asymmetric cryptography, chaotic one-way trapdoors, and zero-round-trip verification.
+</p>
 
-<div class="arch-diagram-wrap" style="margin: 2rem 0; background: #0f1015; border: 1px solid #282a35; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 36px rgba(0,0,0,0.6);">
-  <div class="arch-header" style="background: #171821; border-bottom: 1px solid #282a35; padding: 0.9rem 1.4rem; display: flex; justify-content: space-between; align-items: center;">
-    <div style="display: flex; align-items: center; gap: 0.6rem; font-weight: 700; color: #fff; font-size: 1rem;">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
-      </svg>
-      <span>Physical Mechanics of Digital Signatures: The Shattered Glass Seal</span>
+<!-- Story Overview Hero Card -->
+<div class="arch-diagram-wrap" style="margin: 1.5rem 0; background: #0d0f17; border: 1px solid #282d3f; border-radius: 12px; padding: 1.5rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+  <div style="display: flex; align-items: flex-start; gap: 1rem;">
+    <div style="background: rgba(255, 161, 22, 0.15); border: 1px solid rgba(255, 161, 22, 0.4); border-radius: 10px; padding: 0.75rem; font-size: 1.8rem; line-height: 1;">
+      🪨
     </div>
-    <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.25rem 0.65rem; border-radius: 999px; background: rgba(255, 161, 22, 0.15); color: var(--orange); border: 1px solid rgba(255, 161, 22, 0.35);">
-      One-Way Trapdoor Mental Model
-    </span>
-  </div>
-
-  <div style="padding: 1.25rem; overflow-x: auto; background: radial-gradient(circle at 50% 10%, #1a1c26 0%, #0d0e12 80%);">
-    <svg viewBox="0 0 960 480" style="width: 100%; min-width: 800px; height: auto; display: block; margin: 0 auto;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
-      <defs>
-        <filter id="glassShadow" x="-10%" y="-10%" width="120%" height="120%">
-          <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity="0.45"/>
-        </filter>
-        <linearGradient id="waxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#ef4444"/>
-          <stop offset="100%" stop-color="#991b1b"/>
-        </linearGradient>
-      </defs>
-
-      <!-- ========================================================
-           STAGE 1: THE SHATTERED SPLIT (Left Box)
-           ======================================================== -->
-      <g filter="url(#glassShadow)">
-        <rect x="30" y="30" width="280" height="420" rx="10" fill="#151720" stroke="#2e3346" stroke-width="1.5"/>
-        <rect x="45" y="42" width="170" height="22" rx="4" fill="#a855f7" fill-opacity="0.2"/>
-        <text x="55" y="58" fill="#c084fc" font-size="12" font-weight="700">1. THE SECRET SPLIT</text>
-
-        <!-- Solid Glass Block Splitting -->
-        <g transform="translate(60, 90)">
-          <!-- Left Fragment (Private Key) -->
-          <path d="M 10 10 L 80 10 L 80 30 L 95 45 L 75 70 L 100 95 L 80 120 L 90 140 L 80 160 L 10 160 Z" fill="#2d1b3d" stroke="#a855f7" stroke-width="2"/>
-          <text x="20" y="85" fill="#c084fc" font-size="11" font-weight="700">LEFT</text>
-          <text x="16" y="100" fill="#e2e8f0" font-size="10.5">FRAGMENT</text>
-
-          <!-- Crack Lightning Line -->
-          <path d="M 85 10 L 85 30 L 100 45 L 80 70 L 105 95 L 85 120 L 95 140 L 85 160" stroke="#ffa116" stroke-width="2" stroke-dasharray="3,2"/>
-
-          <!-- Right Fragment (Public Key) -->
-          <path d="M 90 10 L 160 10 L 160 160 L 90 160 L 100 140 L 90 120 L 115 95 L 90 70 L 110 45 L 90 30 Z" fill="#142638" stroke="#38bdf8" stroke-width="2"/>
-          <text x="115" y="85" fill="#38bdf8" font-size="11" font-weight="700">RIGHT</text>
-          <text x="110" y="100" fill="#e2e8f0" font-size="10.5">FRAGMENT</text>
-        </g>
-
-        <!-- Descriptions -->
-        <text x="45" y="295" fill="#c084fc" font-size="12" font-weight="700">🗝️ Private Key (Left Half):</text>
-        <text x="45" y="315" fill="#cbd5e1" font-size="11.5">Locked in the King's vault.</text>
-        <text x="45" y="333" fill="#cbd5e1" font-size="11.5">Guarded with life; strictly secret.</text>
-
-        <text x="45" y="370" fill="#38bdf8" font-size="12" font-weight="700">🌐 Public Key (Right Half):</text>
-        <text x="45" y="390" fill="#cbd5e1" font-size="11.5">Handed out to every citizen,</text>
-        <text x="45" y="408" fill="#cbd5e1" font-size="11.5">merchant &amp; courtier in the realm.</text>
-      </g>
-
-      <!-- Arrow Stage 1 -> 2 -->
-      <path d="M 315 220 L 335 220" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-purple)"/>
-
-      <!-- ========================================================
-           STAGE 2: THE SIGNING ACTION (Middle Box)
-           ======================================================== -->
-      <g filter="url(#boxShadow)">
-        <rect x="340" y="30" width="280" height="420" rx="10" fill="#151720" stroke="#2e3346" stroke-width="1.5"/>
-        <rect x="355" y="42" width="180" height="22" rx="4" fill="#ef4444" fill-opacity="0.2"/>
-        <text x="365" y="58" fill="#ef4444" font-size="12" font-weight="700">2. THE SIGNING ACTION</text>
-
-        <!-- Parchment Document with Stamp -->
-        <g transform="translate(370, 90)">
-          <!-- Document Letter -->
-          <rect x="25" y="10" width="150" height="175" rx="6" fill="#1c202d" stroke="#3b4258" stroke-width="1.5"/>
-          <!-- Letter Text Lines -->
-          <line x1="45" y1="35" x2="140" y2="35" stroke="#475569" stroke-width="2"/>
-          <line x1="45" y1="50" x2="155" y2="50" stroke="#475569" stroke-width="2"/>
-          <line x1="45" y1="65" x2="120" y2="65" stroke="#475569" stroke-width="2"/>
-          <line x1="45" y1="80" x2="145" y2="80" stroke="#475569" stroke-width="2"/>
-
-          <!-- Red Wax Seal at bottom of letter -->
-          <circle cx="100" cy="135" r="32" fill="url(#waxGrad)" stroke="#b91c1c" stroke-width="2"/>
-          <!-- Embedded Jagged Impression in the Wax -->
-          <path d="M 90 110 L 95 120 L 85 135 L 105 145 L 92 160" stroke="#fca5a5" stroke-width="2.5" fill="none"/>
-          <text x="75" y="138" fill="#fff" font-size="9" font-weight="800">SEAL</text>
-
-          <!-- Left Fragment Pressing down arrow -->
-          <path d="M 100 85 L 100 102" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="3,2"/>
-          <polygon points="96,102 104,102 100,108" fill="#ef4444"/>
-        </g>
-
-        <!-- Descriptions -->
-        <text x="355" y="295" fill="#ef4444" font-size="12" font-weight="700">📜 Pressing into Hot Wax:</text>
-        <text x="355" y="315" fill="#cbd5e1" font-size="11.5">King stamps his Left Fragment</text>
-        <text x="355" y="333" fill="#cbd5e1" font-size="11.5">directly into hot wax on the decree.</text>
-
-        <text x="355" y="370" fill="#ffa116" font-size="12" font-weight="700">❄️ Frozen Impression = Signature:</text>
-        <text x="355" y="390" fill="#cbd5e1" font-size="11.5">Leaves a microscopic, chaotic</text>
-        <text x="355" y="408" fill="#cbd5e1" font-size="11.5">glass-fracture pattern in the wax.</text>
-      </g>
-
-      <!-- Arrow Stage 2 -> 3 -->
-      <path d="M 625 220 L 645 220" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-purple)"/>
-
-      <!-- ========================================================
-           STAGE 3: VERIFYING THE FIT (Right Box)
-           ======================================================== -->
-      <g filter="url(#boxShadow)">
-        <rect x="650" y="30" width="280" height="420" rx="10" fill="#151720" stroke="#2e3346" stroke-width="1.5"/>
-        <rect x="665" y="42" width="180" height="22" rx="4" fill="#00b8a3" fill-opacity="0.2"/>
-        <text x="675" y="58" fill="#00b8a3" font-size="12" font-weight="700">3. VERIFYING THE FIT</text>
-
-        <!-- Interlocking Puzzle Demonstration -->
-        <g transform="translate(685, 90)">
-          <!-- Red Wax Impression (from Left side) -->
-          <rect x="10" y="20" width="85" height="130" rx="4" fill="#7f1d1d" stroke="#ef4444" stroke-width="1.5"/>
-          <!-- Jagged Cavity -->
-          <path d="M 95 20 L 95 40 L 105 55 L 85 80 L 110 105 L 95 130 L 105 150 L 95 150 Z" fill="#991b1b"/>
-          <text x="25" y="85" fill="#fca5a5" font-size="10" font-weight="700">WAX STAMP</text>
-
-          <!-- Right Fragment (Public Key) Sliding into Cavity -->
-          <path d="M 95 20 L 150 20 L 150 150 L 95 150 L 105 130 L 95 105 L 120 80 L 100 55 L 110 40 L 95 20 Z" fill="#132b38" stroke="#00b8a3" stroke-width="2"/>
-          <text x="105" y="85" fill="#2dd4bf" font-size="10" font-weight="700">PUBLIC</text>
-          <text x="110" y="100" fill="#e2e8f0" font-size="9.5">KEY</text>
-
-          <!-- Checkmark Badge -->
-          <rect x="30" y="160" width="145" height="24" rx="4" fill="#00b8a3" fill-opacity="0.2" stroke="#00b8a3" stroke-width="1"/>
-          <text x="40" y="176" fill="#00b8a3" font-size="11" font-weight="800">✓ PERFECT CLICK!</text>
-        </g>
-
-        <!-- Descriptions -->
-        <text x="665" y="295" fill="#00b8a3" font-size="12" font-weight="700">🧩 The Interlock Check:</text>
-        <text x="665" y="315" fill="#cbd5e1" font-size="11.5">Citizen presses their Public Key</text>
-        <text x="665" y="333" fill="#cbd5e1" font-size="11.5">directly against the wax impression.</text>
-
-        <!-- Rejection Sub-Card: The One-Way Trapdoor -->
-        <rect x="660" y="355" width="260" height="80" rx="6" fill="#261215" stroke="#ef4444" stroke-width="1.2"/>
-        <text x="670" y="375" fill="#ef4444" font-size="11.5" font-weight="800">❌ Why Hackers Fail (Trapdoor):</text>
-        <text x="670" y="395" fill="#fca5a5" font-size="11">Holding the Public piece &amp; seeing</text>
-        <text x="670" y="412" fill="#fca5a5" font-size="11">the wax impression does NOT let you</text>
-        <text x="670" y="428" fill="#fca5a5" font-size="11">forge or recreate the King's piece!</text>
-      </g>
-    </svg>
+    <div>
+      <h3 style="color: #fff; margin: 0 0 0.4rem 0; font-size: 1.15rem; font-weight: 700;">The Physical Truth of Cryptography</h3>
+      <p style="color: #cbd5e1; margin: 0; font-size: 0.92rem; line-height: 1.6;">
+        Imagine a natural <strong>Magic Metal rock</strong> that cannot be cut, carved, or machined by any tool on earth.
+        You drop it on the floor, letting it shatter into a completely random, unrepeatable, jagged crack.
+        You keep the <strong>Left Part</strong> hidden in a vault as the <strong>Private Key</strong> and throw away the rest.
+        The King uses this jagged metal edge to press unique, complex seals into wax on every letter (<strong>Signing</strong>).
+        An exact dummy-material copy of that final seal shape is handed to every citizen as the <strong>Public Key</strong>.
+        Citizens verify a letter by placing their dummy mold directly on top of the wax stamp to check the fit (<strong>Verifying</strong>).
+        Because nature never makes the exact same crack twice, and magic metal cannot be machined, the private tool remains completely uncopyable!
+      </p>
+    </div>
   </div>
 </div>
 
-<div class="req-grid" style="margin: 1.5rem 0;">
-  <div class="req-card">
-    <div class="req-title" style="color: #c084fc;">1. The Random Jagged Fracture</div>
-    <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0; line-height: 1.5;">
-      A hammer strikes a solid crystal block with chaotic vertical force, snapping it into two pieces along an unpredictable, microscopic fault line. No human on earth could ever carve or replicate that exact same jagged edge twice.
-    </p>
+<!-- ========================================================
+     THE 6-IMAGE VISUAL SEQUENCE GRID
+     ======================================================== -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+
+  <!-- ==================== IMAGE 1 ==================== -->
+  <div class="arch-diagram-wrap" style="background: #11131d; border: 1px solid #262a3b; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+    <div style="background: #171a26; padding: 0.75rem 1rem; border-bottom: 1px solid #262a3b; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: 800; font-size: 0.85rem; color: #ffa116; text-transform: uppercase; letter-spacing: 0.05em;">
+        🖼️ Image 1 · The Chaotic Fracture
+      </span>
+      <span style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(255,161,22,0.15); color: #ffa116; border: 1px solid rgba(255,161,22,0.3);">
+        Key Generation (p × q)
+      </span>
+    </div>
+    <div style="padding: 1rem; background: radial-gradient(circle at 50% 20%, #1a1e2d 0%, #0d0e15 100%); flex-grow: 1;">
+      <svg viewBox="0 0 460 210" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+        <defs>
+          <radialGradient id="impactGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#ffa116" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#ffa116" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <!-- Floor line -->
+        <line x1="20" y1="180" x2="440" y2="180" stroke="#334155" stroke-width="2"/>
+        <text x="25" y="198" fill="#64748b" font-size="10" font-weight="600">SOLID GRANITE FLOOR</text>
+
+        <!-- Impact Shockwave -->
+        <circle cx="230" cy="180" r="50" fill="url(#impactGlow)"/>
+        <path d="M 190 180 L 160 170 M 270 180 L 300 170 M 230 180 L 230 150" stroke="#ffa116" stroke-width="2" stroke-linecap="round"/>
+
+        <!-- Falling Rock Splitting -->
+        <g transform="translate(110, 20)">
+          <!-- Left Metal Fragment (Private Key) -->
+          <path d="M 20 20 L 110 20 L 110 45 L 125 65 L 105 95 L 130 120 L 110 145 L 120 160 L 20 160 Z" fill="#2d1b4d" stroke="#a855f7" stroke-width="2.5"/>
+          <text x="45" y="85" fill="#c084fc" font-size="12" font-weight="800">LEFT PART</text>
+          <text x="35" y="102" fill="#e2e8f0" font-size="10">Uncuttable Metal</text>
+
+          <!-- Violent Jagged Fracture Line -->
+          <path d="M 115 20 L 115 45 L 130 65 L 110 95 L 135 120 L 115 145 L 125 160" stroke="#ffa116" stroke-width="3" stroke-linecap="round"/>
+
+          <!-- Right Fragment -->
+          <path d="M 125 20 L 210 20 L 210 160 L 130 160 L 120 145 L 140 120 L 115 95 L 135 65 L 120 45 L 120 20 Z" fill="#14263b" stroke="#38bdf8" stroke-width="2"/>
+          <text x="145" y="85" fill="#38bdf8" font-size="12" font-weight="800">RIGHT PART</text>
+          <text x="142" y="102" fill="#94a3b8" font-size="10">Discarded Fragment</text>
+
+          <!-- Sound FX -->
+          <rect x="75" y="5" width="80" height="20" rx="4" fill="#ef4444"/>
+          <text x="82" y="19" fill="#fff" font-size="11" font-weight="900">💥 *CRACK!*</text>
+        </g>
+      </svg>
+    </div>
+    <div style="padding: 0.9rem 1.1rem; border-top: 1px solid #262a3b; background: #131622; font-size: 0.84rem; line-height: 1.5; color: #cbd5e1;">
+      <strong style="color: #ffa116;">The Physical Story:</strong> You drop a natural Magic Metal rock on the stone floor. It splits into an unpredictable, microscopic jagged crack. Nature never makes the same crack twice.<br/>
+      <strong style="color: #c084fc;">Crypto Reality:</strong> Hardware RNG generates 2 massive secret primes <code>p, q</code>. The chaotic split is your key generation seed.
+    </div>
   </div>
-  <div class="req-card">
-    <div class="req-title" style="color: #ef4444;">2. Signing (The King's Action)</div>
-    <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0; line-height: 1.5;">
-      To send an official decree, the King presses his <strong>Left Fragment (Private Key)</strong> into hot wax on the letter. This leaves a unique, microscopic fracture impression in the wax: <strong>The Digital Signature</strong>.
-    </p>
+
+  <!-- ==================== IMAGE 2 ==================== -->
+  <div class="arch-diagram-wrap" style="background: #11131d; border: 1px solid #262a3b; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+    <div style="background: #171a26; padding: 0.75rem 1rem; border-bottom: 1px solid #262a3b; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: 800; font-size: 0.85rem; color: #c084fc; text-transform: uppercase; letter-spacing: 0.05em;">
+        🖼️ Image 2 · The Vault &amp; The Void
+      </span>
+      <span style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(168,85,247,0.15); color: #c084fc; border: 1px solid rgba(168,85,247,0.3);">
+        Private Key Storage
+      </span>
+    </div>
+    <div style="padding: 1rem; background: radial-gradient(circle at 50% 20%, #1a1e2d 0%, #0d0e15 100%); flex-grow: 1;">
+      <svg viewBox="0 0 460 210" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+        <!-- Vault (Left) -->
+        <g transform="translate(20, 20)">
+          <rect x="0" y="0" width="190" height="170" rx="8" fill="#181a26" stroke="#a855f7" stroke-width="2"/>
+          <rect x="15" y="15" width="160" height="140" rx="4" fill="#12131c" stroke="#373d54" stroke-width="1"/>
+          <!-- Combination Wheel -->
+          <circle cx="150" cy="85" r="18" fill="#2d1b4d" stroke="#a855f7" stroke-width="2"/>
+          <line x1="150" y1="72" x2="150" y2="98" stroke="#c084fc" stroke-width="2"/>
+          <line x1="137" y1="85" x2="163" y2="85" stroke="#c084fc" stroke-width="2"/>
+          <!-- Left Fragment on Pedestal -->
+          <rect x="35" y="115" width="80" height="25" rx="3" fill="#332448" stroke="#a855f7"/>
+          <path d="M 45 50 L 85 50 L 95 65 L 80 85 L 98 100 L 85 115 L 45 115 Z" fill="#4c1d95" stroke="#c084fc" stroke-width="2"/>
+          <text x="32" y="132" fill="#fff" font-size="9" font-weight="700">KING'S VAULT</text>
+          <text x="30" y="32" fill="#c084fc" font-size="11" font-weight="800">🔒 PRIVATE KEY (sk)</text>
+          <text x="30" y="45" fill="#94a3b8" font-size="9.5">Guarded for Life. Strictly Secret.</text>
+        </g>
+
+        <!-- The Void / Furnace (Right) -->
+        <g transform="translate(250, 20)">
+          <rect x="0" y="0" width="190" height="170" rx="8" fill="#1a1215" stroke="#ef4444" stroke-width="2"/>
+          <!-- Fire Pit / Abyss -->
+          <ellipse cx="95" cy="130" rx="70" ry="25" fill="#7f1d1d" stroke="#dc2626" stroke-width="2"/>
+          <!-- Flames -->
+          <path d="M 45 130 Q 60 90 75 120 Q 95 70 115 120 Q 135 90 145 130 Z" fill="#ef4444" opacity="0.8"/>
+          <!-- Falling Debris / Right fragment dissolving -->
+          <path d="M 85 45 L 115 45 L 110 75 L 80 75 Z" fill="#2d151c" stroke="#f87171" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <text x="25" y="32" fill="#ef4444" font-size="11" font-weight="800">🔥 THE VOID (DESTROYED)</text>
+          <text x="25" y="45" fill="#fca5a5" font-size="9.5">Remaining Shards Thrown Away</text>
+          <text x="25" y="152" fill="#cbd5e1" font-size="9" font-weight="600">Factors Erased Forever</text>
+        </g>
+      </svg>
+    </div>
+    <div style="padding: 0.9rem 1.1rem; border-top: 1px solid #262a3b; background: #131622; font-size: 0.84rem; line-height: 1.5; color: #cbd5e1;">
+      <strong style="color: #c084fc;">The Physical Story:</strong> The King keeps ONLY the Left jagged metal piece in his vault. All remaining shards are swept into the furnace. Only 1 copy of the stamping edge exists.<br/>
+      <strong style="color: #38bdf8;">Crypto Reality:</strong> The Private Key is locked inside a Hardware Security Module (KMS/HSM). The prime generation factors are safely purged from memory.
+    </div>
   </div>
-  <div class="req-card">
-    <div class="req-title" style="color: var(--easy);">3. Verifying (The Public's Action)</div>
-    <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0; line-height: 1.5;">
-      A citizen takes their <strong>Right Fragment (Public Key)</strong> and presses it against the wax signature. Because both fragments were born from the exact same random shatter, their jagged edges <strong>click and interlock seamlessly</strong>. Valid!
-    </p>
+
+  <!-- ==================== IMAGE 3 ==================== -->
+  <div class="arch-diagram-wrap" style="background: #11131d; border: 1px solid #262a3b; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+    <div style="background: #171a26; padding: 0.75rem 1rem; border-bottom: 1px solid #262a3b; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: 800; font-size: 0.85rem; color: #ef4444; text-transform: uppercase; letter-spacing: 0.05em;">
+        🖼️ Image 3 · Stamping the Letter (Signing)
+      </span>
+      <span style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(239,68,68,0.15); color: #ef4444; border: 1px solid rgba(239,68,68,0.3);">
+        Digital Signature
+      </span>
+    </div>
+    <div style="padding: 1rem; background: radial-gradient(circle at 50% 20%, #1a1e2d 0%, #0d0e15 100%); flex-grow: 1;">
+      <svg viewBox="0 0 460 210" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+        <defs>
+          <linearGradient id="hotWaxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ef4444"/>
+            <stop offset="100%" stop-color="#991b1b"/>
+          </linearGradient>
+        </defs>
+        <!-- Royal Parchment Letter -->
+        <g transform="translate(60, 20)">
+          <rect x="0" y="0" width="220" height="170" rx="6" fill="#1b202e" stroke="#3b425a" stroke-width="1.5"/>
+          <text x="20" y="28" fill="#ffa116" font-size="11" font-weight="800">ROYAL DECREE / DATA</text>
+          <line x1="20" y1="45" x2="200" y2="45" stroke="#475569" stroke-width="2"/>
+          <line x1="20" y1="60" x2="180" y2="60" stroke="#475569" stroke-width="2"/>
+          <line x1="20" y1="75" x2="190" y2="75" stroke="#475569" stroke-width="2"/>
+
+          <!-- Molten Wax Stamp -->
+          <circle cx="110" cy="120" r="34" fill="url(#hotWaxGrad)" stroke="#b91c1c" stroke-width="2"/>
+          <!-- Embedded Jagged Impression -->
+          <path d="M 98 95 L 105 108 L 92 122 L 112 134 L 102 145" stroke="#fca5a5" stroke-width="3" fill="none"/>
+          <text x="82" y="124" fill="#fff" font-size="10" font-weight="900">SEAL</text>
+        </g>
+
+        <!-- Stamping Tool Action (Right) -->
+        <g transform="translate(310, 30)">
+          <!-- Left Metal Fragment in King's Hand -->
+          <path d="M 20 10 L 80 10 L 80 40 L 95 60 L 75 85 L 100 105 L 85 125 L 20 125 Z" fill="#3b1d54" stroke="#c084fc" stroke-width="2"/>
+          <text x="25" y="65" fill="#c084fc" font-size="10" font-weight="800">KING'S METAL</text>
+          <!-- Press Down Vector -->
+          <path d="M 0 85 L -20 105" stroke="#ef4444" stroke-width="3" stroke-dasharray="4,2"/>
+          <polygon points="-22,100 -25,112 -13,107" fill="#ef4444"/>
+          <rect x="-35" y="145" width="160" height="24" rx="4" fill="#ef4444" fill-opacity="0.2" stroke="#ef4444"/>
+          <text x="-25" y="161" fill="#ef4444" font-size="10.5" font-weight="700">HOT WAX FREEZES SHAPE</text>
+        </g>
+      </svg>
+    </div>
+    <div style="padding: 0.9rem 1.1rem; border-top: 1px solid #262a3b; background: #131622; font-size: 0.84rem; line-height: 1.5; color: #cbd5e1;">
+      <strong style="color: #ef4444;">The Physical Story:</strong> The King presses his secret jagged metal edge into hot molten wax on the letter. When it cools, the unique fracture pattern freezes permanently into the wax: <strong>The Signature</strong>.<br/>
+      <strong style="color: #ffa116;">Crypto Reality:</strong> <code>Signature = Sign(SHA256(Data), Private_Key)</code>. The signature mathematically locks the document data to the private key.
+    </div>
   </div>
-  <div class="req-card">
-    <div class="req-title" style="color: var(--orange);">4. Why Hackers Fail (The Trapdoor)</div>
-    <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0; line-height: 1.5;">
-      A hacker holds the Public piece and stares at the wax stamp, but cannot carve the King's piece. The chaos of a physical break is a <strong>one-way street</strong>: looking at one side of broken glass gives you zero internal geometry to recreate the missing half.
-    </p>
+
+  <!-- ==================== IMAGE 4 ==================== -->
+  <div class="arch-diagram-wrap" style="background: #11131d; border: 1px solid #262a3b; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+    <div style="background: #171a26; padding: 0.75rem 1rem; border-bottom: 1px solid #262a3b; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: 800; font-size: 0.85rem; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.05em;">
+        🖼️ Image 4 · The Dummy Mold (Public Key)
+      </span>
+      <span style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(56,189,248,0.15); color: #38bdf8; border: 1px solid rgba(56,189,248,0.3);">
+        Public Key Distribution
+      </span>
+    </div>
+    <div style="padding: 1rem; background: radial-gradient(circle at 50% 20%, #1a1e2d 0%, #0d0e15 100%); flex-grow: 1;">
+      <svg viewBox="0 0 460 210" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+        <!-- Cast Dummy Mold from Wax -->
+        <g transform="translate(30, 25)">
+          <rect x="0" y="0" width="160" height="160" rx="8" fill="#142334" stroke="#38bdf8" stroke-width="1.5"/>
+          <text x="18" y="26" fill="#38bdf8" font-size="11" font-weight="800">DUMMY CLAY MOLD</text>
+          <!-- Reverse impression shape -->
+          <path d="M 40 45 L 110 45 L 110 135 L 40 135 L 55 115 L 35 95 L 58 75 L 45 60 Z" fill="#0c4a6e" stroke="#38bdf8" stroke-width="2"/>
+          <text x="50" y="92" fill="#7dd3fc" font-size="10" font-weight="700">TEST MOLD</text>
+          <text x="18" y="150" fill="#94a3b8" font-size="9">Exact negative test template</text>
+        </g>
+
+        <!-- Arrow: Mass Distribution -->
+        <path d="M 205 105 L 245 105" stroke="#38bdf8" stroke-width="2.5" marker-end="url(#arrow-cyan)"/>
+        <text x="200" y="90" fill="#38bdf8" font-size="9" font-weight="700">COPIED TO ALL</text>
+
+        <!-- Citizen Crowd / World -->
+        <g transform="translate(260, 25)">
+          <rect x="0" y="0" width="170" height="160" rx="8" fill="#151b28" stroke="#334155" stroke-width="1.5"/>
+          <text x="15" y="26" fill="#00b8a3" font-size="11" font-weight="800">ALL CITIZENS (PUBLIC)</text>
+          <!-- Mini Dummy Molds handed out -->
+          <rect x="20" y="45" width="60" height="40" rx="4" fill="#0c4a6e" stroke="#38bdf8"/>
+          <text x="25" y="68" fill="#38bdf8" font-size="9" font-weight="700">Citizen #1</text>
+          <rect x="90" y="45" width="60" height="40" rx="4" fill="#0c4a6e" stroke="#38bdf8"/>
+          <text x="95" y="68" fill="#38bdf8" font-size="9" font-weight="700">Merchant</text>
+          <rect x="20" y="95" width="60" height="40" rx="4" fill="#0c4a6e" stroke="#38bdf8"/>
+          <text x="25" y="118" fill="#38bdf8" font-size="9" font-weight="700">Courier</text>
+          <rect x="90" y="95" width="60" height="40" rx="4" fill="#0c4a6e" stroke="#38bdf8"/>
+          <text x="95" y="118" fill="#38bdf8" font-size="9" font-weight="700">Foreigner</text>
+        </g>
+      </svg>
+    </div>
+    <div style="padding: 0.9rem 1.1rem; border-top: 1px solid #262a3b; background: #131622; font-size: 0.84rem; line-height: 1.5; color: #cbd5e1;">
+      <strong style="color: #38bdf8;">The Physical Story:</strong> An artisan takes a soft dummy material (clay/lead) and casts a negative mold of the seal. Copies of this dummy mold are handed to every citizen in the kingdom as the <strong>Public Key</strong>.<br/>
+      <strong style="color: #00b8a3;">Crypto Reality:</strong> The Public Key <code>(n = p &times; q, e)</code> is published openly to everyone via JWKS, DNS, or Certificate Stores.
+    </div>
   </div>
+
+  <!-- ==================== IMAGE 5 ==================== -->
+  <div class="arch-diagram-wrap" style="background: #11131d; border: 1px solid #262a3b; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+    <div style="background: #171a26; padding: 0.75rem 1rem; border-bottom: 1px solid #262a3b; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: 800; font-size: 0.85rem; color: #00b8a3; text-transform: uppercase; letter-spacing: 0.05em;">
+        🖼️ Image 5 · Verifying the Fit (Instant Check)
+      </span>
+      <span style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(0,184,163,0.15); color: #00b8a3; border: 1px solid rgba(0,184,163,0.3);">
+        Zero-Call Local Verify
+      </span>
+    </div>
+    <div style="padding: 1rem; background: radial-gradient(circle at 50% 20%, #1a1e2d 0%, #0d0e15 100%); flex-grow: 1;">
+      <svg viewBox="0 0 460 210" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+        <!-- Sub-panel A: Authentic Fit -->
+        <g transform="translate(20, 20)">
+          <rect x="0" y="0" width="195" height="170" rx="8" fill="#102521" stroke="#00b8a3" stroke-width="1.5"/>
+          <text x="15" y="24" fill="#00b8a3" font-size="10.5" font-weight="800">GENUINE LETTER: FLUSH FIT</text>
+          <!-- Wax Seal -->
+          <rect x="25" y="40" width="60" height="90" rx="4" fill="#7f1d1d" stroke="#ef4444"/>
+          <text x="32" y="85" fill="#fca5a5" font-size="8.5" font-weight="700">WAX</text>
+          <!-- Interlocking Public Dummy Mold fitting with 0 gap -->
+          <path d="M 85 40 L 140 40 L 140 130 L 85 130 L 95 110 L 82 90 L 98 70 L 85 55 Z" fill="#064e3b" stroke="#00b8a3" stroke-width="2"/>
+          <text x="96" y="85" fill="#2dd4bf" font-size="8.5" font-weight="700">MOLD</text>
+          <!-- Success Badge -->
+          <rect x="15" y="138" width="165" height="22" rx="4" fill="#00b8a3"/>
+          <text x="24" y="153" fill="#000" font-size="10" font-weight="900">✓ 100% PERFECT FIT — VALID!</text>
+        </g>
+
+        <!-- Sub-panel B: Tampered / Fake -->
+        <g transform="translate(245, 20)">
+          <rect x="0" y="0" width="195" height="170" rx="8" fill="#251216" stroke="#ef4444" stroke-width="1.5"/>
+          <text x="15" y="24" fill="#ef4444" font-size="10.5" font-weight="800">TAMPERED LETTER: MISMATCH</text>
+          <!-- Fake / altered seal -->
+          <rect x="25" y="40" width="60" height="90" rx="4" fill="#450a0a" stroke="#ef4444"/>
+          <!-- Mold tilted / wobbling / colliding -->
+          <g transform="rotate(12, 110, 85)">
+            <path d="M 85 40 L 140 40 L 140 130 L 85 130 L 95 110 L 82 90 L 98 70 L 85 55 Z" fill="#3b1219" stroke="#ef4444" stroke-width="2"/>
+          </g>
+          <text x="95" y="55" fill="#ef4444" font-size="14" font-weight="900">⚡ GAP</text>
+          <!-- Fail Badge -->
+          <rect x="15" y="138" width="165" height="22" rx="4" fill="#ef4444"/>
+          <text x="22" y="153" fill="#fff" font-size="10" font-weight="900">❌ WOBBLES &amp; FAILS — REJECTED!</text>
+        </g>
+      </svg>
+    </div>
+    <div style="padding: 0.9rem 1.1rem; border-top: 1px solid #262a3b; background: #131622; font-size: 0.84rem; line-height: 1.5; color: #cbd5e1;">
+      <strong style="color: #00b8a3;">The Physical Story:</strong> Citizen places dummy mold on the wax stamp. If it fits flush without a hair's gap &rarr; 100% authentic from the King! If altered, the mold tilts and fails. <strong>Zero trips to the castle needed.</strong><br/>
+      <strong style="color: #38bdf8;">Crypto Reality:</strong> Verification is a fast local mathematical check: <code>Decrypt(Sig, PublicKey) == SHA256(Data)</code>. Zero network latency!
+    </div>
+  </div>
+
+  <!-- ==================== IMAGE 6 ==================== -->
+  <div class="arch-diagram-wrap" style="background: #11131d; border: 1px solid #262a3b; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;">
+    <div style="background: #171a26; padding: 0.75rem 1rem; border-bottom: 1px solid #262a3b; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: 800; font-size: 0.85rem; color: #f43f5e; text-transform: uppercase; letter-spacing: 0.05em;">
+        🖼️ Image 6 · Why Hackers Fail (Trapdoor)
+      </span>
+      <span style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(244,63,94,0.15); color: #f43f5e; border: 1px solid rgba(244,63,94,0.3);">
+        One-Way Physics
+      </span>
+    </div>
+    <div style="padding: 1rem; background: radial-gradient(circle at 50% 20%, #1a1e2d 0%, #0d0e15 100%); flex-grow: 1;">
+      <svg viewBox="0 0 460 210" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+        <!-- Hacker Workshop -->
+        <g transform="translate(30, 20)">
+          <rect x="0" y="0" width="400" height="170" rx="8" fill="#18131d" stroke="#f43f5e" stroke-width="1.5"/>
+
+          <!-- 3 Impossibility Pillars -->
+          <!-- Pillar 1: Chisel Shatters -->
+          <g transform="translate(15, 20)">
+            <rect x="0" y="0" width="115" height="135" rx="6" fill="#24141c" stroke="#3d212b"/>
+            <text x="10" y="20" fill="#fca5a5" font-size="10" font-weight="800">1. UNCARVABLE</text>
+            <!-- Broken Chisel -->
+            <line x1="20" y1="50" x2="60" y2="75" stroke="#94a3b8" stroke-width="3"/>
+            <path d="M 60 75 L 80 88" stroke="#ef4444" stroke-width="3" stroke-dasharray="2,2"/>
+            <text x="65" y="65" fill="#ffa116" font-size="10">💥 *SNAP*</text>
+            <text x="10" y="105" fill="#cbd5e1" font-size="8.5">Magic Metal cannot</text>
+            <text x="10" y="118" fill="#cbd5e1" font-size="8.5">be cut, carved or filed.</text>
+          </g>
+
+          <!-- Pillar 2: Holding Mold Tells Nothing -->
+          <g transform="translate(142, 20)">
+            <rect x="0" y="0" width="115" height="135" rx="6" fill="#24141c" stroke="#3d212b"/>
+            <text x="10" y="20" fill="#fca5a5" font-size="10" font-weight="800">2. NO SOURCE</text>
+            <!-- Dummy mold in hand -->
+            <rect x="35" y="45" width="45" height="35" rx="3" fill="#0c4a6e" stroke="#38bdf8"/>
+            <text x="42" y="66" fill="#38bdf8" font-size="9" font-weight="700">MOLD</text>
+            <text x="10" y="105" fill="#cbd5e1" font-size="8.5">Holding dummy mold</text>
+            <text x="10" y="118" fill="#cbd5e1" font-size="8.5">reveals zero private ore.</text>
+          </g>
+
+          <!-- Pillar 3: Nature Never Repeats -->
+          <g transform="translate(270, 20)">
+            <rect x="0" y="0" width="115" height="135" rx="6" fill="#24141c" stroke="#3d212b"/>
+            <text x="10" y="20" fill="#fca5a5" font-size="10" font-weight="800">3. NO REPEAT</text>
+            <!-- Random dice / probability -->
+            <text x="25" y="65" fill="#f43f5e" font-size="18" font-weight="900">1 in 2²⁵⁶</text>
+            <text x="10" y="105" fill="#cbd5e1" font-size="8.5">Dropping another rock</text>
+            <text x="10" y="118" fill="#cbd5e1" font-size="8.5">never makes same split.</text>
+          </g>
+        </g>
+      </svg>
+    </div>
+    <div style="padding: 0.9rem 1.1rem; border-top: 1px solid #262a3b; background: #131622; font-size: 0.84rem; line-height: 1.5; color: #cbd5e1;">
+      <strong style="color: #f43f5e;">The Physical Story:</strong> The hacker holds the public dummy mold and stares at the wax stamp, but cannot forge the King's metal key: the metal cannot be machined, and nature never shatters the same way twice!<br/>
+      <strong style="color: #ffa116;">Crypto Reality:</strong> The Mathematical Trapdoor. Calculating <code>p</code> and <code>q</code> from <code>n</code> takes $pprox 10^{15}$ compute years. Signing without the private key is impossible.
+    </div>
+  </div>
+
+</div>
+
+
+<!-- ========================================================
+     REAL-WORLD MAPPING: HOW JWTS & SSL/TLS CERTIFICATES WORK
+     ======================================================== -->
+<h2 id="security-how-jwt-and-tls-certificates-work">How JWTs &amp; SSL/TLS Certificates Use This Exact Mechanism</h2>
+<p>
+  <strong>Yes! 100% exactly.</strong> Every critical security system powering the modern Internet &mdash; from <strong>JSON Web Tokens (JWTs)</strong> to <strong>SSL/TLS (HTTPS) Certificates</strong>, <strong>SSH Keys</strong>, and <strong>Bitcoin/Crypto transactions</strong> &mdash; operates on this exact physical metaphor:
+  <br/>
+  <span style="color: var(--cyan); font-weight: 700;">A single secret stamper held in a vault, paired with millions of public test molds distributed across the world.</span>
+</p>
+
+<!-- The Rosetta Stone Comparison Table -->
+<div class="table-wrap" style="margin: 1.5rem 0;">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 18%;">Concept</th>
+        <th style="width: 25%;">Physical Magic Metal Analogy</th>
+        <th style="width: 28%;">JSON Web Token (JWT / Auth0)</th>
+        <th style="width: 29%;">SSL/TLS HTTPS Certificate</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>1. The Private Key</strong></td>
+        <td>The Left Jagged Magic Metal Piece locked in the King's vault.</td>
+        <td>The <strong>Auth Server's Private Key</strong> (stored in AWS KMS or Vault).</td>
+        <td>The <strong>Certificate Authority's (CA) Root Private Key</strong> (DigiCert, Let's Encrypt in offline air-gapped vault).</td>
+      </tr>
+      <tr>
+        <td><strong>2. The Message / Document</strong></td>
+        <td>The Royal Decree on parchment ("Pay merchant 1,000 gold").</td>
+        <td>The JWT Payload: <code>{"sub": "user_42", "role": "admin", "exp": 1780000000}</code></td>
+        <td>Website Certificate Data: <code>Domain: bank.com</code> + <code>bank.com's Public Key</code> + <code>Expiry</code>.</td>
+      </tr>
+      <tr>
+        <td><strong>3. The Stamped Seal (Signature)</strong></td>
+        <td>The microscopic jagged impression frozen in hot red wax.</td>
+        <td>The JWT Signature: <code>HMACSHA256(Base64(Header + Payload), PrivateKey)</code></td>
+        <td>The CA's Digital Signature stamped across the X.509 certificate.</td>
+      </tr>
+      <tr>
+        <td><strong>4. The Public Mold (Public Key)</strong></td>
+        <td>The lightweight dummy clay mold handed to every citizen.</td>
+        <td>The <strong>JWKS Public Key</strong> (published at <code>/.well-known/jwks.json</code>).</td>
+        <td>The <strong>Root CA Certificate</strong> pre-installed in Windows, macOS, iOS, Chrome, Safari.</td>
+      </tr>
+      <tr>
+        <td><strong>5. Verification Action</strong></td>
+        <td>Citizen presses dummy mold onto wax &rarr; flush fit means authentic!</td>
+        <td>Any microservice decrypts signature with JWKS public mold &rarr; matches hash!</td>
+        <td>Browser fits pre-installed Root CA mold onto certificate signature &rarr; green padlock!</td>
+      </tr>
+      <tr>
+        <td><strong>6. The Superpower</strong></td>
+        <td>Citizen verifies decree locally without traveling to the castle.</td>
+        <td><strong>Zero Auth DB Calls:</strong> 50 microservices verify tokens independently at $0.1	ext{ms}$.</td>
+        <td><strong>Zero CA Calls:</strong> Browser verifies bank certificate in $0	ext{ms}$ without pinging DigiCert!</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ========================================================
+     DUAL ARCHITECTURE DIAGRAMS: JWT vs TLS
+     ======================================================== -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); gap: 1.5rem; margin: 2rem 0;">
+
+  <!-- Visual Architecture 1: JSON Web Token (JWT) -->
+  <div class="arch-diagram-wrap" style="background: #11131e; border: 1px solid #282d42; border-radius: 12px; overflow: hidden;">
+    <div style="background: #181b2a; padding: 0.75rem 1.2rem; border-bottom: 1px solid #282d42; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: 800; font-size: 0.9rem; color: #ffa116;">
+        🔑 Flow A · How JWT Uses the Stamping Mold
+      </span>
+      <span style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(255,161,22,0.15); color: #ffa116;">
+        Stateless Microservices
+      </span>
+    </div>
+    <div style="padding: 1.25rem;">
+      <svg viewBox="0 0 460 270" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+        <!-- 1. Identity Provider / King -->
+        <g transform="translate(10, 15)">
+          <rect x="0" y="0" width="130" height="90" rx="8" fill="#1e182e" stroke="#a855f7" stroke-width="1.5"/>
+          <text x="12" y="24" fill="#c084fc" font-size="10" font-weight="800">AUTH SERVER (IdP)</text>
+          <text x="12" y="40" fill="#94a3b8" font-size="8.5">Holds Metal Key</text>
+          <rect x="12" y="52" width="106" height="24" rx="4" fill="#a855f7" fill-opacity="0.2"/>
+          <text x="18" y="68" fill="#c084fc" font-size="9" font-weight="700">🔒 RS256 Private Key</text>
+        </g>
+
+        <!-- Arrow: Issues Token -->
+        <path d="M 145 60 L 195 60" stroke="#ffa116" stroke-width="2"/>
+        <polygon points="193,56 201,60 193,64" fill="#ffa116"/>
+        <text x="145" y="52" fill="#ffa116" font-size="8" font-weight="700">Stamps Sig</text>
+
+        <!-- 2. Signed Token -->
+        <g transform="translate(205, 15)">
+          <rect x="0" y="0" width="130" height="90" rx="8" fill="#1b202e" stroke="#3b425a" stroke-width="1.5"/>
+          <text x="12" y="24" fill="#ffa116" font-size="10" font-weight="800">SIGNED JWT TOKEN</text>
+          <text x="12" y="42" fill="#ef4444" font-size="8" font-family="monospace">header.payload</text>
+          <rect x="10" y="52" width="110" height="24" rx="4" fill="#ef4444" fill-opacity="0.2"/>
+          <text x="15" y="68" fill="#fca5a5" font-size="8.5" font-weight="700">❄️ Wax Stamp (Sig)</text>
+        </g>
+
+        <!-- Distribute Public Mold -->
+        <path d="M 75 110 L 75 145 L 210 145" stroke="#38bdf8" stroke-width="2" stroke-dasharray="3,2"/>
+        <polygon points="208,141 216,145 208,149" fill="#38bdf8"/>
+        <text x="85" y="138" fill="#38bdf8" font-size="8.5" font-weight="700">Publish JWKS Dummy Mold</text>
+
+        <!-- 3. Microservices (Citizens) -->
+        <g transform="translate(220, 125)">
+          <rect x="0" y="0" width="225" height="130" rx="8" fill="#102521" stroke="#00b8a3" stroke-width="1.5"/>
+          <text x="15" y="22" fill="#00b8a3" font-size="10.5" font-weight="800">50 INDEPENDENT MICROSERVICES</text>
+          <text x="15" y="38" fill="#94a3b8" font-size="8.5">Payment, Order, Search, Cart</text>
+
+          <rect x="15" y="50" width="195" height="40" rx="4" fill="#064e3b" stroke="#00b8a3"/>
+          <text x="24" y="66" fill="#2dd4bf" font-size="9" font-weight="700">🧩 Fit Cached JWKS Mold over Token</text>
+          <text x="24" y="80" fill="#a7f3d0" font-size="8.5">Verified locally in 0.1ms (0 DB queries!)</text>
+
+          <!-- Checkmark -->
+          <rect x="15" y="98" width="195" height="22" rx="4" fill="#00b8a3"/>
+          <text x="35" y="113" fill="#000" font-size="9.5" font-weight="900">✓ REQUEST AUTHORIZED INSTANTLY</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Visual Architecture 2: SSL/TLS Certificate -->
+  <div class="arch-diagram-wrap" style="background: #11131e; border: 1px solid #282d42; border-radius: 12px; overflow: hidden;">
+    <div style="background: #181b2a; padding: 0.75rem 1.2rem; border-bottom: 1px solid #282d42; display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-weight: 800; font-size: 0.9rem; color: #38bdf8;">
+        🔒 Flow B · How SSL/TLS Uses the Stamping Mold
+      </span>
+      <span style="font-size: 0.72rem; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(56,189,248,0.15); color: #38bdf8;">
+        PKI Chain of Trust
+      </span>
+    </div>
+    <div style="padding: 1.25rem;">
+      <svg viewBox="0 0 460 270" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+        <!-- 1. Certificate Authority -->
+        <g transform="translate(10, 15)">
+          <rect x="0" y="0" width="130" height="90" rx="8" fill="#1e182e" stroke="#a855f7" stroke-width="1.5"/>
+          <text x="12" y="24" fill="#c084fc" font-size="10" font-weight="800">ROOT CA (DigiCert)</text>
+          <text x="12" y="40" fill="#94a3b8" font-size="8.5">Offline Air-Gapped Vault</text>
+          <rect x="12" y="52" width="106" height="24" rx="4" fill="#a855f7" fill-opacity="0.2"/>
+          <text x="18" y="68" fill="#c084fc" font-size="9" font-weight="700">🔒 CA Private Metal Key</text>
+        </g>
+
+        <!-- Arrow: Signs Cert -->
+        <path d="M 145 60 L 195 60" stroke="#38bdf8" stroke-width="2"/>
+        <polygon points="193,56 201,60 193,64" fill="#38bdf8"/>
+        <text x="145" y="52" fill="#38bdf8" font-size="8" font-weight="700">Signs Cert</text>
+
+        <!-- 2. Bank.com Certificate -->
+        <g transform="translate(205, 15)">
+          <rect x="0" y="0" width="130" height="90" rx="8" fill="#1b202e" stroke="#3b425a" stroke-width="1.5"/>
+          <text x="12" y="24" fill="#38bdf8" font-size="10" font-weight="800">BANK.COM CERT</text>
+          <text x="12" y="42" fill="#cbd5e1" font-size="8.5">Domain: bank.com</text>
+          <rect x="10" y="52" width="110" height="24" rx="4" fill="#ef4444" fill-opacity="0.2"/>
+          <text x="15" y="68" fill="#fca5a5" font-size="8.5" font-weight="700">❄️ CA Digital Signature</text>
+        </g>
+
+        <!-- Pre-install Mold in Browser -->
+        <path d="M 75 110 L 75 145 L 210 145" stroke="#00b8a3" stroke-width="2" stroke-dasharray="3,2"/>
+        <polygon points="208,141 216,145 208,149" fill="#00b8a3"/>
+        <text x="85" y="138" fill="#00b8a3" font-size="8.5" font-weight="700">Pre-install CA Public Mold in OS</text>
+
+        <!-- 3. User Browser -->
+        <g transform="translate(220, 125)">
+          <rect x="0" y="0" width="225" height="130" rx="8" fill="#102521" stroke="#00b8a3" stroke-width="1.5"/>
+          <text x="15" y="22" fill="#00b8a3" font-size="10.5" font-weight="800">USER BROWSER (Chrome/Safari)</text>
+          <text x="15" y="38" fill="#94a3b8" font-size="8.5">Visits https://bank.com</text>
+
+          <rect x="15" y="50" width="195" height="40" rx="4" fill="#064e3b" stroke="#00b8a3"/>
+          <text x="24" y="66" fill="#2dd4bf" font-size="9" font-weight="700">🧩 Fit Pre-installed CA Mold on Cert</text>
+          <text x="24" y="80" fill="#a7f3d0" font-size="8.5">Verified in 0ms (zero network calls to CA!)</text>
+
+          <!-- Checkmark -->
+          <rect x="15" y="98" width="195" height="22" rx="4" fill="#00b8a3"/>
+          <text x="45" y="113" fill="#000" font-size="9.5" font-weight="900">🔒 GREEN PADLOCK: SECURE</text>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+</div>
+
+<!-- Architecture Takeaway Callout -->
+<div class="arch-diagram-wrap" style="margin: 1.5rem 0; background: #131722; border-left: 4px solid var(--easy); border-radius: 0 10px 10px 0; padding: 1.2rem 1.5rem;">
+  <div style="font-weight: 800; color: #fff; font-size: 1rem; margin-bottom: 0.4rem;">
+    💡 Why This Architecture Changed the Entire Computing World
+  </div>
+  <p style="color: #cbd5e1; font-size: 0.9rem; line-height: 1.6; margin: 0;">
+    Before asymmetric digital signatures, verification required a <strong>centralized database lookup</strong>: every microservice had to query the Auth DB to validate a session token, and every browser had to call a central registry to check if a website was real.
+    <br/><br/>
+    With <strong>The Magic Metal / Dummy Mold architecture</strong>, issuance is centralized to the authority holding the private key, but <strong>verification is distributed, offline, and instantaneous</strong> <code>O(1)</code> across billions of devices with <strong>zero central bottlenecks</strong>!
+  </p>
 </div>
 
 
