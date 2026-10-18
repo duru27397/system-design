@@ -639,6 +639,12 @@
                 <span class="nav-title">Digital Signatures &amp; Hashing</span>
               </a>
 
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-signing-process-shattered-glass-analogy">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Signing: Shattered Glass Analogy</span>
+              </a>
+
+
               <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-pki-and-certificate-authorities">
                 <span class="leaf-dot">•</span>
                 <span class="nav-title">PKI &amp; Certificate Authorities (CAs)</span>
@@ -7184,6 +7190,184 @@ Similarly, if Database 2 (at position 25) fails:</p>
    Computed_Hash  = SHA256( Data )
    Valid          = (Decrypted_Hash == Computed_Hash)
 </code></pre></div>
+
+
+<h2 id="security-signing-process-shattered-glass-analogy">The Signing Process: The Shattered Glass Seal Analogy (Visual)</h2>
+<p>To truly understand how digital signatures work without getting lost in mathematical abstraction, visualize the <strong>Shattered Glass Seal</strong>: the mechanical essence of asymmetric keypairs and the one-way trapdoor.</p>
+
+<div class="arch-diagram-wrap" style="margin: 2rem 0; background: #0f1015; border: 1px solid #282a35; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 36px rgba(0,0,0,0.6);">
+  <div class="arch-header" style="background: #171821; border-bottom: 1px solid #282a35; padding: 0.9rem 1.4rem; display: flex; justify-content: space-between; align-items: center;">
+    <div style="display: flex; align-items: center; gap: 0.6rem; font-weight: 700; color: #fff; font-size: 1rem;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--orange)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+      </svg>
+      <span>Physical Mechanics of Digital Signatures: The Shattered Glass Seal</span>
+    </div>
+    <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.25rem 0.65rem; border-radius: 999px; background: rgba(255, 161, 22, 0.15); color: var(--orange); border: 1px solid rgba(255, 161, 22, 0.35);">
+      One-Way Trapdoor Mental Model
+    </span>
+  </div>
+
+  <div style="padding: 1.25rem; overflow-x: auto; background: radial-gradient(circle at 50% 10%, #1a1c26 0%, #0d0e12 80%);">
+    <svg viewBox="0 0 960 480" style="width: 100%; min-width: 800px; height: auto; display: block; margin: 0 auto;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+      <defs>
+        <filter id="glassShadow" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity="0.45"/>
+        </filter>
+        <linearGradient id="waxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ef4444"/>
+          <stop offset="100%" stop-color="#991b1b"/>
+        </linearGradient>
+      </defs>
+
+      <!-- ========================================================
+           STAGE 1: THE SHATTERED SPLIT (Left Box)
+           ======================================================== -->
+      <g filter="url(#glassShadow)">
+        <rect x="30" y="30" width="280" height="420" rx="10" fill="#151720" stroke="#2e3346" stroke-width="1.5"/>
+        <rect x="45" y="42" width="170" height="22" rx="4" fill="#a855f7" fill-opacity="0.2"/>
+        <text x="55" y="58" fill="#c084fc" font-size="12" font-weight="700">1. THE SECRET SPLIT</text>
+
+        <!-- Solid Glass Block Splitting -->
+        <g transform="translate(60, 90)">
+          <!-- Left Fragment (Private Key) -->
+          <path d="M 10 10 L 80 10 L 80 30 L 95 45 L 75 70 L 100 95 L 80 120 L 90 140 L 80 160 L 10 160 Z" fill="#2d1b3d" stroke="#a855f7" stroke-width="2"/>
+          <text x="20" y="85" fill="#c084fc" font-size="11" font-weight="700">LEFT</text>
+          <text x="16" y="100" fill="#e2e8f0" font-size="10.5">FRAGMENT</text>
+
+          <!-- Crack Lightning Line -->
+          <path d="M 85 10 L 85 30 L 100 45 L 80 70 L 105 95 L 85 120 L 95 140 L 85 160" stroke="#ffa116" stroke-width="2" stroke-dasharray="3,2"/>
+
+          <!-- Right Fragment (Public Key) -->
+          <path d="M 90 10 L 160 10 L 160 160 L 90 160 L 100 140 L 90 120 L 115 95 L 90 70 L 110 45 L 90 30 Z" fill="#142638" stroke="#38bdf8" stroke-width="2"/>
+          <text x="115" y="85" fill="#38bdf8" font-size="11" font-weight="700">RIGHT</text>
+          <text x="110" y="100" fill="#e2e8f0" font-size="10.5">FRAGMENT</text>
+        </g>
+
+        <!-- Descriptions -->
+        <text x="45" y="295" fill="#c084fc" font-size="12" font-weight="700">🗝️ Private Key (Left Half):</text>
+        <text x="45" y="315" fill="#cbd5e1" font-size="11.5">Locked in the King's vault.</text>
+        <text x="45" y="333" fill="#cbd5e1" font-size="11.5">Guarded with life; strictly secret.</text>
+
+        <text x="45" y="370" fill="#38bdf8" font-size="12" font-weight="700">🌐 Public Key (Right Half):</text>
+        <text x="45" y="390" fill="#cbd5e1" font-size="11.5">Handed out to every citizen,</text>
+        <text x="45" y="408" fill="#cbd5e1" font-size="11.5">merchant &amp; courtier in the realm.</text>
+      </g>
+
+      <!-- Arrow Stage 1 -> 2 -->
+      <path d="M 315 220 L 335 220" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-purple)"/>
+
+      <!-- ========================================================
+           STAGE 2: THE SIGNING ACTION (Middle Box)
+           ======================================================== -->
+      <g filter="url(#boxShadow)">
+        <rect x="340" y="30" width="280" height="420" rx="10" fill="#151720" stroke="#2e3346" stroke-width="1.5"/>
+        <rect x="355" y="42" width="180" height="22" rx="4" fill="#ef4444" fill-opacity="0.2"/>
+        <text x="365" y="58" fill="#ef4444" font-size="12" font-weight="700">2. THE SIGNING ACTION</text>
+
+        <!-- Parchment Document with Stamp -->
+        <g transform="translate(370, 90)">
+          <!-- Document Letter -->
+          <rect x="25" y="10" width="150" height="175" rx="6" fill="#1c202d" stroke="#3b4258" stroke-width="1.5"/>
+          <!-- Letter Text Lines -->
+          <line x1="45" y1="35" x2="140" y2="35" stroke="#475569" stroke-width="2"/>
+          <line x1="45" y1="50" x2="155" y2="50" stroke="#475569" stroke-width="2"/>
+          <line x1="45" y1="65" x2="120" y2="65" stroke="#475569" stroke-width="2"/>
+          <line x1="45" y1="80" x2="145" y2="80" stroke="#475569" stroke-width="2"/>
+
+          <!-- Red Wax Seal at bottom of letter -->
+          <circle cx="100" cy="135" r="32" fill="url(#waxGrad)" stroke="#b91c1c" stroke-width="2"/>
+          <!-- Embedded Jagged Impression in the Wax -->
+          <path d="M 90 110 L 95 120 L 85 135 L 105 145 L 92 160" stroke="#fca5a5" stroke-width="2.5" fill="none"/>
+          <text x="75" y="138" fill="#fff" font-size="9" font-weight="800">SEAL</text>
+
+          <!-- Left Fragment Pressing down arrow -->
+          <path d="M 100 85 L 100 102" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="3,2"/>
+          <polygon points="96,102 104,102 100,108" fill="#ef4444"/>
+        </g>
+
+        <!-- Descriptions -->
+        <text x="355" y="295" fill="#ef4444" font-size="12" font-weight="700">📜 Pressing into Hot Wax:</text>
+        <text x="355" y="315" fill="#cbd5e1" font-size="11.5">King stamps his Left Fragment</text>
+        <text x="355" y="333" fill="#cbd5e1" font-size="11.5">directly into hot wax on the decree.</text>
+
+        <text x="355" y="370" fill="#ffa116" font-size="12" font-weight="700">❄️ Frozen Impression = Signature:</text>
+        <text x="355" y="390" fill="#cbd5e1" font-size="11.5">Leaves a microscopic, chaotic</text>
+        <text x="355" y="408" fill="#cbd5e1" font-size="11.5">glass-fracture pattern in the wax.</text>
+      </g>
+
+      <!-- Arrow Stage 2 -> 3 -->
+      <path d="M 625 220 L 645 220" stroke="#64748b" stroke-width="2" marker-end="url(#arrow-purple)"/>
+
+      <!-- ========================================================
+           STAGE 3: VERIFYING THE FIT (Right Box)
+           ======================================================== -->
+      <g filter="url(#boxShadow)">
+        <rect x="650" y="30" width="280" height="420" rx="10" fill="#151720" stroke="#2e3346" stroke-width="1.5"/>
+        <rect x="665" y="42" width="180" height="22" rx="4" fill="#00b8a3" fill-opacity="0.2"/>
+        <text x="675" y="58" fill="#00b8a3" font-size="12" font-weight="700">3. VERIFYING THE FIT</text>
+
+        <!-- Interlocking Puzzle Demonstration -->
+        <g transform="translate(685, 90)">
+          <!-- Red Wax Impression (from Left side) -->
+          <rect x="10" y="20" width="85" height="130" rx="4" fill="#7f1d1d" stroke="#ef4444" stroke-width="1.5"/>
+          <!-- Jagged Cavity -->
+          <path d="M 95 20 L 95 40 L 105 55 L 85 80 L 110 105 L 95 130 L 105 150 L 95 150 Z" fill="#991b1b"/>
+          <text x="25" y="85" fill="#fca5a5" font-size="10" font-weight="700">WAX STAMP</text>
+
+          <!-- Right Fragment (Public Key) Sliding into Cavity -->
+          <path d="M 95 20 L 150 20 L 150 150 L 95 150 L 105 130 L 95 105 L 120 80 L 100 55 L 110 40 L 95 20 Z" fill="#132b38" stroke="#00b8a3" stroke-width="2"/>
+          <text x="105" y="85" fill="#2dd4bf" font-size="10" font-weight="700">PUBLIC</text>
+          <text x="110" y="100" fill="#e2e8f0" font-size="9.5">KEY</text>
+
+          <!-- Checkmark Badge -->
+          <rect x="30" y="160" width="145" height="24" rx="4" fill="#00b8a3" fill-opacity="0.2" stroke="#00b8a3" stroke-width="1"/>
+          <text x="40" y="176" fill="#00b8a3" font-size="11" font-weight="800">✓ PERFECT CLICK!</text>
+        </g>
+
+        <!-- Descriptions -->
+        <text x="665" y="295" fill="#00b8a3" font-size="12" font-weight="700">🧩 The Interlock Check:</text>
+        <text x="665" y="315" fill="#cbd5e1" font-size="11.5">Citizen presses their Public Key</text>
+        <text x="665" y="333" fill="#cbd5e1" font-size="11.5">directly against the wax impression.</text>
+
+        <!-- Rejection Sub-Card: The One-Way Trapdoor -->
+        <rect x="660" y="355" width="260" height="80" rx="6" fill="#261215" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="670" y="375" fill="#ef4444" font-size="11.5" font-weight="800">❌ Why Hackers Fail (Trapdoor):</text>
+        <text x="670" y="395" fill="#fca5a5" font-size="11">Holding the Public piece &amp; seeing</text>
+        <text x="670" y="412" fill="#fca5a5" font-size="11">the wax impression does NOT let you</text>
+        <text x="670" y="428" fill="#fca5a5" font-size="11">forge or recreate the King's piece!</text>
+      </g>
+    </svg>
+  </div>
+</div>
+
+<div class="req-grid" style="margin: 1.5rem 0;">
+  <div class="req-card">
+    <div class="req-title" style="color: #c084fc;">1. The Random Jagged Fracture</div>
+    <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0; line-height: 1.5;">
+      A hammer strikes a solid crystal block with chaotic vertical force, snapping it into two pieces along an unpredictable, microscopic fault line. No human on earth could ever carve or replicate that exact same jagged edge twice.
+    </p>
+  </div>
+  <div class="req-card">
+    <div class="req-title" style="color: #ef4444;">2. Signing (The King's Action)</div>
+    <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0; line-height: 1.5;">
+      To send an official decree, the King presses his <strong>Left Fragment (Private Key)</strong> into hot wax on the letter. This leaves a unique, microscopic fracture impression in the wax: <strong>The Digital Signature</strong>.
+    </p>
+  </div>
+  <div class="req-card">
+    <div class="req-title" style="color: var(--easy);">3. Verifying (The Public's Action)</div>
+    <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0; line-height: 1.5;">
+      A citizen takes their <strong>Right Fragment (Public Key)</strong> and presses it against the wax signature. Because both fragments were born from the exact same random shatter, their jagged edges <strong>click and interlock seamlessly</strong>. Valid!
+    </p>
+  </div>
+  <div class="req-card">
+    <div class="req-title" style="color: var(--orange);">4. Why Hackers Fail (The Trapdoor)</div>
+    <p style="font-size: 0.85rem; color: #cbd5e1; margin: 0; line-height: 1.5;">
+      A hacker holds the Public piece and stares at the wax stamp, but cannot carve the King's piece. The chaos of a physical break is a <strong>one-way street</strong>: looking at one side of broken glass gives you zero internal geometry to recreate the missing half.
+    </p>
+  </div>
+</div>
+
 
 <h2 id="security-pki-and-certificate-authorities">Public Key Infrastructure (PKI) &amp; Certificate Authorities (CAs)</h2>
 <p>Suppose you want to talk to <code>https://bank.com</code>. The server sends you its Public Key. But how do you know the public key belongs to the real Bank and not a malicious hacker sitting on your Wi-Fi network who swapped the key with their own?</p>
