@@ -4081,6 +4081,82 @@
 
           </div>
 
+          <div class="tree-node l2-node">
+            <div class="tree-header l2-header">
+              <button class='tree-toggle' type='button' aria-label='Toggle Single Sign-On (SSO)'><span class='chevron'>▾</span></button>
+              <a class="nav-item l2-link" href="#problem-breakdowns-single-sign-on">
+                <span class="nav-title">Single Sign-On (SSO)</span>
+              </a>
+            </div>
+
+            <!-- LEVEL 3 (Sections / Anchors) -->
+            <div class="tree-children l3-children">
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-glossary-and-core-concepts">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Glossary &amp; Security Concepts</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-understanding-the-problem">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Understanding the Problem</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-functional-requirements">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Functional Requirements</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-non-functional-requirements">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Non-Functional Requirements</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-back-of-the-envelope-estimation">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Back-of-the-Envelope Estimation</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-high-level-design">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">High-Level Design &amp; Flow</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-deep-dive-1-token-validation-at-scale">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Deep Dive 1: 100M/s Token Validation</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-deep-dive-2-near-instant-revocation">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Deep Dive 2: Near-Instant Revocation</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-deep-dive-3-refresh-token-rotation">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Deep Dive 3: Token Chains &amp; Replay Detection</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-deep-dive-4-key-rotation-and-jwks">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Deep Dive 4: Zero-Downtime Key Rotation</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-api-design-and-data-models">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">API Design &amp; Data Schemas</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#problem-breakdowns-single-sign-on" data-target-sub="sso-bottlenecks-and-trade-offs">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Bottlenecks &amp; Trade-Offs</span>
+              </a>
+
+            </div>
+
+          </div>
+
+
         </div>
       </div>
 
@@ -24680,10 +24756,573 @@ FOR UPDATE SKIP LOCKED;
 <h6>Test Your Knowledge</h6>
 <p>Answer the question below to find your gaps.</p>
 <p>Mark as read</p>
-<p>Next: Real-time Updates</p>
+<p>Next: Single Sign-On (SSO)</p>
 <p>&lt;div class="comments-container w-full max-w-full min-w-0 overflow-x-hidden overflow-y-hidden pb-6"</p>
 </div>
       </section>
+
+      <section class="page-view" id="problem-breakdowns-single-sign-on" data-topic-title="Problem Breakdowns" data-page-title="Single Sign-On (SSO / OAuth Provider)">
+        <header class="page-header">
+          <span class="page-category-badge">💡 Problem Breakdowns</span>
+          <h1 class="page-title">Single Sign-On (SSO / OAuth 2.0 &amp; OIDC Provider)</h1>
+        </header>
+        <div class="page-body">
+<h1>Design Single Sign-On (SSO / OAuth 2.0 &amp; OIDC Provider)</h1>
+<p>By <strong>Chirag Hasija</strong> · System Design Walkthrough · <strong>Difficulty: Hard</strong></p>
+
+<h2 id="sso-glossary-and-core-concepts">Glossary &amp; Core Security Concepts (For Beginners)</h2>
+<p>If you are new to Security, Identity, and SSO, this glossary breaks down every term with plain-English explanations and intuitive real-world analogies before diving into distributed systems scaling.</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Plain-English Definition</th>
+<th>Real-World Airport / Hotel Analogy</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Authentication (AuthN)</strong></td>
+<td>Verifying <em>who you are</em> (proving your identity via passwords, biometric passkeys, or MFA).</td>
+<td>Showing your government Passport to TSA border control to prove who you are.</td>
+</tr>
+<tr>
+<td><strong>Authorization (AuthZ)</strong></td>
+<td>Determining <em>what you are allowed to do</em> (checking permissions, roles, or scopes).</td>
+<td>Your boarding pass showing you can board flight 302 and sit in seat 14B, but cannot enter the cockpit.</td>
+</tr>
+<tr>
+<td><strong>SSO (Single Sign-On)</strong></td>
+<td>An authentication scheme allowing a user to log in once with a single set of credentials and access multiple independent applications seamlessly.</td>
+<td>Getting an all-inclusive resort wristband once at the front desk that grants access to the pool, buffet, and gym without re-checking your ID.</td>
+</tr>
+<tr>
+<td><strong>IdP (Identity Provider) / Authorization Server</strong></td>
+<td>The central trusted authority that authenticates users, manages sessions, and mints security tokens (e.g., Google Accounts, Okta, Auth0, Microsoft Entra).</td>
+<td>The main hotel front desk that checks your passport and dispenses keycards for your room and amenities.</td>
+</tr>
+<tr>
+<td><strong>RP (Relying Party) / Client App</strong></td>
+<td>The third-party application the user wants to use (e.g., Spotify, Figma, DoorDash) that trusts the IdP for user authentication.</td>
+<td>The resort restaurant or partner beach club that lets you dine because you flash your resort room keycard.</td>
+</tr>
+<tr>
+<td><strong>Resource Server (RS) / API Fleet</strong></td>
+<td>The backend microservices hosting protected user data (e.g., Gmail API, Google Drive API, Spotify Playlists API). They inspect tokens on every incoming request.</td>
+<td>The locked door scanner on the hotel gym or VIP lounge that reads your digital keycard before unlocking.</td>
+</tr>
+<tr>
+<td><strong>Access Token</strong></td>
+<td>A short-lived bearer credential presented to Resource Servers on every API call (e.g., <code>Authorization: Bearer &lt;token&gt;</code>) to access protected data.</td>
+<td>A temporary hotel keycard that unlocks your room door for the next 15 minutes.</td>
+</tr>
+<tr>
+<td><strong>ID Token</strong></td>
+<td>A token specifically for the client app (defined by OpenID Connect / OIDC) containing user identity profile information (name, email, sub). Not for API authorization.</td>
+<td>A badge pinned to your shirt saying "Hello, my name is Alice (alice@example.com)".</td>
+</tr>
+<tr>
+<td><strong>Refresh Token</strong></td>
+<td>A long-lived, high-privilege credential securely stored server-side by the client app, used to fetch a new access token when the current one expires without prompting the user.</td>
+<td>A master voucher in your hotel safe that you take to the front desk to get a freshly activated door keycard when yours runs out.</td>
+</tr>
+<tr>
+<td><strong>Opaque Token</strong></td>
+<td>A random, cryptographically secure unreadable string (e.g., <code>xyz789...</code>) with no internal data. Requires looking up in a central database or IdP introspection endpoint to validate.</td>
+<td>A coat-check numbered ticket. The attendant has to check the numbered rack in the back to know which jacket is yours.</td>
+</tr>
+<tr>
+<td><strong>JWT (JSON Web Token) / Self-Describing Token</strong></td>
+<td>A base64URL-encoded JSON payload digitally signed by the IdP. Carries user ID, expiration, and scopes right inside it, allowing any server to verify it locally without calling the IdP.</td>
+<td>A stamped, tamper-evident concert ticket with the event name, date, and seat number printed in holograph. The bouncer just looks at the stamp.</td>
+</tr>
+<tr>
+<td><strong>Asymmetric Signing (RS256 / ES256)</strong></td>
+<td>Public/Private key cryptography. The IdP signs tokens using its secret <strong>Private Key</strong>. Any Resource Server can verify the signature using the IdP's <strong>Public Key</strong> without being able to forge tokens.</td>
+<td>A notary stamping a document with a unique physical wax seal. Anyone with eyes can verify the seal imprint, but only the notary holds the stamp.</td>
+</tr>
+<tr>
+<td><strong>JWKS (JSON Web Key Set) &amp; kid</strong></td>
+<td>A public JSON endpoint (<code>/.well-known/jwks.json</code>) publishing the IdP's active public keys. The <code>kid</code> (Key ID) header in each JWT tells servers which key in the set verified that token.</td>
+<td>A public bulletin board where the city registrar posts images of the current official notary stamps so anyone can inspect them.</td>
+</tr>
+<tr>
+<td><strong>PKCE (Proof Key for Code Exchange)</strong></td>
+<td>A security extension for OAuth 2.0 protecting public clients (mobile apps, SPAs) from authorization code interception attacks by using dynamic one-time cryptographic secrets.</td>
+<td>Agreeing on a secret handshake code word with the front desk so an eavesdropper can't impersonate you when claiming your room key.</td>
+</tr>
+<tr>
+<td><strong>Scopes &amp; Consent</strong></td>
+<td>Coarse-grained permissions requested by an app (e.g., <code>read:email</code>, <code>write:calendar</code>). The user explicitly consents to these during the authorization prompt.</td>
+<td>Allowing a valet to only park your car, without giving them permission to open the glove compartment or drive on the highway.</td>
+</tr>
+<tr>
+<td><strong>Token Revocation &amp; JTI</strong></td>
+<td>Explicitly cancelling a token before its natural expiry date (e.g., user clicks logout, resets password, or device is stolen). <code>jti</code> is the JWT Unique Token ID.</td>
+<td>Reporting your room key lost so the hotel security flags that keycard number as disabled at every scanner immediately.</td>
+</tr>
+<tr>
+<td><strong>Bloom Filter</strong></td>
+<td>A space-efficient probabilistic data structure used to test set membership in $O(1)$ memory. Answers "definitely not in set" (no false negatives) or "probably in set".</td>
+<td>A quick bouncer checklist: if your name isn't on the summary sheet, you are 100% allowed; if it looks like a match, the bouncer checks the detailed blacklist binder.</td>
+</tr>
+<tr>
+<td><strong>Refresh Token Rotation &amp; Family ID</strong></td>
+<td>Every time a refresh token is used, it is discarded and replaced with a new one. All tokens in the lineage share a <code>family_id</code>. If an old, already-used token is re-submitted, a replay/theft is detected, immediately revoking the whole family!</td>
+<td>A chain of secret passwords: each time you speak the word, you get the next one. If an eavesdropper repeats an old word, alarms sound and your entire account locks instantly.</td>
+</tr>
+<tr>
+<td><strong>KMS / HSM (Key Management Service / Hardware Security Module)</strong></td>
+<td>Dedicated tamper-resistant physical hardware or cloud security service where cryptographic private keys are generated and stored. Private keys never leave the secure boundary.</td>
+<td>A maximum-security bank vault where the master signing stamp is permanently bolted inside; documents enter through a slot, get stamped inside, and slide back out.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="sso-understanding-the-problem">Understanding the Problem</h2>
+<p>Single Sign-On sounds like a login screen. It is not. It is a <strong>token factory that hundreds of applications trust</strong>, sitting at the center of an organization, deciding on every single request across every single app whether the person holding a bearer string is who they claim to be and whether they are allowed to do the thing they are asking to do.</p>
+<p>You log in once at one place (e.g. accounts.google.com), and then Gmail, Docs, Drive, Photos, YouTube, and hundreds of internal tools all trust your requests without ever seeing your password.</p>
+
+<div class="callout callout-warning">
+<p><strong>The Fundamental Architectural Tension:</strong><br/>
+To scale to <strong>100 Million token validations per second</strong>, resource servers must verify tokens locally and offline without calling back to the central Identity Provider (IdP). If every request called the IdP, the IdP would be a colossal single point of failure and latency bottleneck.<br/>
+<em>However</em>, if apps verify tokens offline using static signatures, how do you instantly revoke a compromised token before it expires? <strong>Offline verification and instant revocation are in direct opposition.</strong> The entire system design is how we buy both!</p>
+</div>
+
+<h2 id="sso-functional-requirements">Functional Requirements (FR)</h2>
+<div class="requirements-group">
+<h4>In Scope:</h4>
+<ul>
+<li><strong>Single Sign-On:</strong> A user authenticates once at the central Identity Provider (IdP). Subsequent logins to other Relying Party apps (RPs) happen silently without re-entering credentials as long as the central session is active.</li>
+<li><strong>Authorization Code Flow with PKCE:</strong> Standard OAuth 2.0 / OIDC protocol. App redirects to IdP, user consents, IdP returns short-lived code, app exchanges it back-channel for tokens. PKCE protects public clients (mobile apps, SPAs).</li>
+<li><strong>Token Issuance:</strong> Mint an Access Token (short-lived, presented to resource servers), an ID Token (OIDC identity profile for client app), and a Refresh Token (long-lived, used to renew access tokens).</li>
+<li><strong>Token Validation at Fleet Scale:</strong> Resource servers must validate access tokens on every API call (signature, expiry, issuer, audience, scopes) at 100M validations/sec.</li>
+<li><strong>Scopes and Consent:</strong> Tokens carry scopes (e.g., <code>read:email</code>, <code>write:calendar</code>). User grants consent; resource servers enforce authorization.</li>
+<li><strong>Refresh Token Rotation:</strong> Access tokens expire quickly (~10-15m); refresh tokens renew them silently. Refresh tokens rotate on every use with replay detection.</li>
+<li><strong>Revocation &amp; Single Logout (SLO):</strong> Revoke specific tokens, revoke all tokens for a user (compromise, password reset), and end all app sessions when logging out centrally.</li>
+<li><strong>Key Rotation without Downtime:</strong> Publish public keys via JWKS (<code>/.well-known/jwks.json</code>) and rotate asymmetric signing keys seamlessly across the fleet.</li>
+</ul>
+
+<h4>Explicitly Out of Scope:</h4>
+<ul>
+<li><strong>Primary Authentication &amp; Credential Storage:</strong> Password hashing (Argon2id/bcrypt), WebAuthn/Passkeys, SMS/TOTP MFA logic, and login UI forms are handled by a dedicated Auth Service. SSO handles what happens <em>after</em> the human is verified into a <code>user_id</code>.</li>
+<li><strong>Fine-Grained Authorization / RBAC:</strong> Row-level or tenant-level authorization inside an application is the application's internal responsibility. The IdP provides authenticated identity plus coarse scopes.</li>
+<li><strong>SAML 2.0 &amp; SCIM:</strong> Legacy enterprise SAML and automated user provisioning (SCIM) follow the same session models but are separate directory integration protocols.</li>
+</ul>
+</div>
+
+<h2 id="sso-non-functional-requirements">Non-Functional Requirements (NFR)</h2>
+<ul>
+<li><strong>Massive Scale:</strong> 1 Billion registered users, ~200 Million Daily Active Users (DAU). Fleet peak of <strong>100,000,000 token validations/sec</strong> across all microservice APIs.</li>
+<li><strong>Extreme Latency Bounds:</strong> Token validation must be virtually free: <strong>p99 &lt; 1ms</strong> (local in-memory CPU check). Login and interactive token exchange: p99 &lt; 250ms. Silent token refresh: p99 &lt; 50ms.</li>
+<li><strong>High Availability:</strong> 99.99%+ uptime on issuance. Effective validation availability is even higher (&gt;99.999%) because validation is offline; the IdP can experience downtime without interrupting active API calls across the company.</li>
+<li><strong>Consistency Model:</strong> Token issuance is eventually consistent across read replicas. <strong>Token revocation must be strongly and rapidly consistent</strong> (propagation latency &lt; 1-2 seconds) — a revoked token that still validates is a critical security vulnerability!</li>
+<li><strong>Durability &amp; Key Security:</strong> Private signing keys reside in tamper-proof Cloud KMS / HSMs and never enter application memory. Refresh token datastore is durably replicated and encrypted.</li>
+</ul>
+
+<h2 id="sso-back-of-the-envelope-estimation">Back-of-the-Envelope Estimation (BoE)</h2>
+<p>The numbers reveal an astonishing 5-to-6 orders of magnitude read/write asymmetry that dictates the entire architecture.</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Calculation &amp; Assumptions</th>
+<th>Final Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Issuance QPS (Write Path)</strong></td>
+<td>200M DAU × (1 login + 5 silent refreshes) = 1.2B token mints/day.<br/>1,200,000,000 / 86,400s ≈ 14,000/sec average. Peak (~10x morning surge):</td>
+<td><strong>14,000 avg QPS<br/>140,000 peak QPS</strong></td>
+</tr>
+<tr>
+<td><strong>Validation QPS (Read Path)</strong></td>
+<td>Every microservice API call carries an access token. Total fleet API traffic across all company endpoints:</td>
+<td><strong>100,000,000 validations/sec</strong></td>
+</tr>
+<tr>
+<td><strong>Read vs Write Asymmetry</strong></td>
+<td>Validation QPS (100M) ÷ Issuance QPS (14K) ≈ 7,142 : 1.<br/>Every token is validated thousands of times per lifetime.</td>
+<td><strong>~7,000x More Reads</strong><br/>Forces offline validation!</td>
+</tr>
+<tr>
+<td><strong>Refresh Token Storage</strong></td>
+<td>200M DAU × ~3 active devices = 600M records.<br/>Each record: <code>token_hash</code> (32B) + <code>user_id</code> (8B) + <code>client_id</code> (8B) + <code>scopes</code> (100B) + <code>meta</code> (150B) ≈ 300B.<br/>600M × 300B ≈ 180 GB.</td>
+<td><strong>180 GB Total</strong><br/>(Easily sharded in Key-Value store)</td>
+</tr>
+<tr>
+<td><strong>Central SSO Sessions</strong></td>
+<td>200M active web sessions × ~200B per session state = 40 GB.</td>
+<td><strong>40 GB Total</strong> (In-memory KV cache)</td>
+</tr>
+<tr>
+<td><strong>Active Revocation Set (The Crux!)</strong></td>
+<td>Assume 0.1% of daily tokens are revoked before natural expiry (logout/password reset): 1.2M revocations/day.<br/>Access tokens expire naturally in <strong>1 hour</strong>. Once expired, a revoked token doesn't need tracking!<br/>Active tracked entries: 1.2M × (1h / 24h) ≈ 50,000 entries.<br/>50,000 entries × 40B (<code>jti</code> + <code>exp</code>) ≈ <strong>2 MB</strong>!</td>
+<td><strong>~2 MB Total!</strong><br/>Small enough to broadcast to EVERY server's RAM!</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="sso-high-level-design">High-Level Design &amp; Auth Flow</h2>
+
+<div class="code-wrap"><div class="code-header"><span>SSO &amp; OAuth 2.0 / OIDC Architecture Diagram</span><button class="copy-button" type="button">Copy</button></div><pre><code>+--------------------------------------------------------------------------+
+|                       IDENTITY PROVIDER (IdP)                            |
+|                                                                          |
+|  +-------------+   1. Redirect to /authorize    +---------------------+  |
+|  |             |-------------------------------&gt;|  Authorize Endpoint |  |
+|  |             |&lt;-- 2. Auth code (redirect) ---|  (PKCE &amp; SSO Cookie)   |  |
+|  |             |                                +----------+----------+  |
+|  |    User     |                                           |             |
+|  |   Browser   |                                +----------v----------+  |
+|  |             |                                |   Central Session   |  |
+|  |             |                                |   Store (Redis KV)  |  |
+|  +------+------+                                +---------------------+  |
+|         |                                                                |
+|         | 3. Code redirect                                               |
+|         v                                                                |
+|  +-------------+   4. Exchange code for tokens  +---------------------+  |
+|  |   Relying   |-------------------------------&gt;|   Token Endpoint    |  |
+|  | Party (RP)  |&lt;-- access_token (JWT) ---------| (Code verify + KMS) |  |
+|  | Client App  |    id_token + refresh_token    +----------+----------+  |
+|  +------+------+                                           |             |
+|         |                                                  | CDC Stream  |
+|         | 5. Call API (Bearer JWT)              +----------v----------+  |
+|         |                                       | Revocation Log      |  |
+|         |                                       | (Kafka / Event Bus) |  |
+|         |                                       +----------+----------+  |
++---------|--------------------------------------------------|-------------+
+          |                                                  | Push Revocations
+          v                                                  v (jti + epoch)
++--------------------------------------------------------------------------+
+|                        RESOURCE SERVERS (API FLEET)                      |
+|                                                                          |
+|  +---------------------------+       +--------------------------------+  |
+|  | Offline JWT Verification  |       | Local Revocation Set in RAM    |  |
+|  | - Check signature via JWKS|&lt;-----&gt;| - Bloom Filter front (O(1))    |  |
+|  | - Verify exp, iss, aud    |       | - In-memory Set (&lt;2 MB RAM)    |  |
+|  | - Check scopes in claims  |       | - Auto-evicts on token exp     |  |
+|  +---------------------------+       +--------------------------------+  |
+|             100M token validations/sec - ZERO network calls to IdP!      |
++--------------------------------------------------------------------------+
+</code></pre></div>
+
+<h3>End-to-End Authentication Dance (Step-by-Step):</h3>
+<ol>
+<li><strong>User Initiates Login:</strong> User visits an app (e.g., Spotify). Having no active session, Spotify generates a cryptographically random <code>code_verifier</code>, hashes it to create a <code>code_challenge</code> (PKCE), and redirects the user's browser to the IdP's <code>/authorize</code> endpoint.</li>
+<li><strong>Central SSO Check:</strong> The IdP inspects the browser's cookie jar. If an active <code>sso_session</code> cookie exists (from an earlier login to Google/Okta), authentication is <strong>bypassed completely</strong>! If not, the user logs in once at the central auth screen.</li>
+<li><strong>Scope Consent:</strong> If the app requests new permissions (e.g., <code>read:playlist</code>), the IdP displays a consent prompt. Upon approval, the consent is saved in the database.</li>
+<li><strong>Authorization Code Issued:</strong> The IdP redirects the browser back to Spotify's registered callback URL with a short-lived (60s), single-use authorization code: <code>https://app.com/callback?code=AUTH_CODE&amp;state=CSRF_STATE</code>.</li>
+<li><strong>Back-Channel Token Exchange:</strong> Spotify's backend server sends a direct POST request to the IdP's <code>/token</code> endpoint submitting the <code>code</code>, <code>client_id</code>, and original PKCE <code>code_verifier</code>. The IdP verifies that the verifier matches the initial challenge, invalidates the code, and mints three tokens:
+  <ul>
+    <li><strong>Access Token:</strong> Short-lived JWT (10-15m) signed asymmetrically by IdP private key.</li>
+    <li><strong>ID Token:</strong> OIDC JWT containing the user's profile info (user ID, email).</li>
+    <li><strong>Refresh Token:</strong> Opaque, high-entropy random string stored securely in IdP database.</li>
+  </ul>
+</li>
+<li><strong>Offline API Calls:</strong> Spotify calls backend APIs passing <code>Authorization: Bearer &lt;access_token&gt;</code>. Each API gateway / resource server validates the JWT signature entirely in CPU memory using cached JWKS public keys. <strong>No round-trip to IdP!</strong></li>
+<li><strong>Silent Token Refresh:</strong> When the 15-minute access token expires, Spotify's backend calls IdP <code>POST /token</code> with <code>grant_type=refresh_token</code>. The IdP verifies the refresh token, revokes it, issues a newly rotated refresh token, and returns a fresh access token without the user ever noticing.</li>
+</ol>
+
+<h2 id="sso-deep-dive-1-token-validation-at-scale">Deep Dive 1: 100M/sec Token Validation — Opaque vs. JWT</h2>
+
+<p>How do we validate 100 Million tokens every second with sub-millisecond latency?</p>
+
+<h4>Approach A: Opaque Tokens with Remote Introspection (RFC 7662)</h4>
+<p>The IdP generates a random 32-byte string. On every incoming API call, the resource server calls the IdP's <code>/introspect</code> endpoint or queries a central Redis cluster: <em>"Is this token valid, and who owns it?"</em></p>
+<ul>
+<li><strong>The Fatal Flaw:</strong> At 100M API requests/sec, the IdP cluster must serve 100,000,000 introspection queries per second. A single network blip or IdP outage instantly returns <code>401 Unauthorized</code> across every service in the entire enterprise. Caching introspection results locally just re-introduces a stale revocation window while still paying network latency.</li>
+</ul>
+
+<h4>Approach B: Self-Describing Signed JWTs (Offline Verification)</h4>
+<p>The IdP creates a JSON Web Token containing claims (<code>sub</code>, <code>exp</code>, <code>aud</code>, <code>scope</code>, <code>jti</code>) and signs it using an asymmetric private key (RS256 or ES256). The public key is published via JWKS.</p>
+<ul>
+<li><strong>How Verification Works Locally:</strong>
+  <ol>
+    <li>Extract the JWT header to read the <code>kid</code> (Key ID).</li>
+    <li>Retrieve the matching public key from the local in-memory cache (JWKS is fetched once and cached for hours).</li>
+    <li>Cryptographically verify the digital signature using local CPU (takes ~15-30 microseconds).</li>
+    <li>Assert standard claims: <code>now &lt; exp</code>, <code>iss == "https://idp.example.com"</code>, <code>aud == "my-service"</code>.</li>
+    <li>Verify that the JWT <code>scope</code> string satisfies the endpoint's requirements.</li>
+  </ol>
+</li>
+<li><strong>Result:</strong> <strong>Zero network calls.</strong> Validation costs ~0.05ms of local CPU time. If the IdP catches fire and shuts down, the entire application fleet continues working normally until active tokens expire!</li>
+</ul>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Opaque + Introspection</th>
+<th>Self-Describing JWT (Offline)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Validation Cost</strong></td>
+<td>Remote network RPC (5-20ms)</td>
+<td><strong>Local CPU verify (&lt; 0.1ms)</strong></td>
+</tr>
+<tr>
+<td><strong>IdP Load at Peak</strong></td>
+<td>100,000,000 QPS (Unscalable bottleneck)</td>
+<td><strong>~0 QPS</strong></td>
+</tr>
+<tr>
+<td><strong>IdP Outage Blast Radius</strong></td>
+<td>Immediate 100% outage across company</td>
+<td>Zero impact on existing active sessions</td>
+</tr>
+<tr>
+<td><strong>Token Payload Size</strong></td>
+<td>~40 bytes (compact string)</td>
+<td>~800 bytes - 1.2 KB (header + payload + sig)</td>
+</tr>
+<tr>
+<td><strong>Revocation Mechanism</strong></td>
+<td>Trivial: delete database row</td>
+<td>Hard: requires active revocation streaming</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="sso-deep-dive-2-near-instant-revocation">Deep Dive 2: Near-Instant Revocation of Offline Tokens</h2>
+
+<p>Because JWTs are self-contained and verified offline, standard JWTs remain valid until their expiration timestamp (<code>exp</code>). But what if a user clicks <em>"Log out of all devices"</em>, reports a phone stolen, or changes their password? Waiting 15 minutes for natural expiration is an unacceptable security hazard.</p>
+
+<div class="callout callout-info">
+<p><strong>The Architectural Breakthrough:</strong><br/>
+Because access tokens live for only 10-15 minutes, <strong>only tokens revoked within their remaining window of life need to be tracked!</strong> Once a revoked token passes its natural expiration timestamp, it is rejected by standard timestamp validation anyway. Thus, the active revocation list contains only ~50,000 items (a minuscule <strong>~2 MB</strong> of data)!</p>
+</div>
+
+<h4>The In-Memory Broadcast Engine:</h4>
+<ol>
+<li><strong>Revocation Trigger:</strong> A user clicks logout or resets their password at the IdP.</li>
+<li><strong>Append-Only Event Stream:</strong> The IdP immediately writes a revocation event <code>{ jti, exp, user_id, revoked_before }</code> to a partitioned Kafka topic or durable distributed log.</li>
+<li><strong>Fleet Fan-Out:</strong> Every API Gateway and Resource Server instance runs a lightweight background subscriber that consumes the revocation topic in real time.</li>
+<li><strong>Two-Tier In-Memory Filter:</strong>
+  <ul>
+    <li><strong>Tier 1 — Bloom Filter:</strong> Checks whether the incoming token's <code>jti</code> has been revoked. A Bloom filter query takes $O(1)$ CPU operations with <strong>zero false negatives</strong>. If the Bloom filter returns <em>negative</em>, the token is guaranteed not revoked.</li>
+    <li><strong>Tier 2 — Exact Hash Set:</strong> If the Bloom filter returns a potential match, the server checks an in-memory <code>HashSet&lt;jti, exp&gt;</code>. If present, the request is rejected with <code>401 Unauthorized</code>.</li>
+  </ul>
+</li>
+<li><strong>Self-Cleaning Garbage Collection:</strong> A background thread sweeps the in-memory set every minute, automatically purging entries where <code>exp &lt; now()</code>. Memory never leaks.</li>
+<li><strong>User-Level Epoch Cutoff (Nuclear Option):</strong> For password changes or account compromise, rather than enumerating individual token IDs, the IdP broadcasts <code>{ user_id: 12345, revoked_before: 1718000000 }</code>. If an incoming token has <code>iat &lt; revoked_before</code>, it is instantly denied!</li>
+</ol>
+
+<h2 id="sso-deep-dive-3-refresh-token-rotation">Deep Dive 3: Refresh Token Chains &amp; Replay Detection</h2>
+
+<p>Refresh tokens live for days or months. If an attacker steals a static refresh token from a database leak or compromised mobile backup, they could maintain silent access indefinitely. We eliminate this with <strong>Refresh Token Rotation &amp; Replay Detection</strong>.</p>
+
+<div class="code-wrap"><div class="code-header"><span>Refresh Token Chain &amp; Theft Detection</span><button class="copy-button" type="button">Copy</button></div><pre><code>Normal Flow:
+[RT_1] --(used)---&gt; Issues [RT_2] --(used)---&gt; Issues [RT_3]
+ (marked used)                       (marked used)
+
+Theft / Replay Attack Scenario:
+1. Attacker steals [RT_1] from device storage.
+2. Legitimate user uses [RT_1] -&gt; IdP issues [RT_2], marks [RT_1] as USED.
+3. Attacker later attempts to use stolen [RT_1].
+4. IdP checks DB: [RT_1].used == TRUE!
+   ===&gt; REPLAY DETECTED!
+   ===&gt; IdP immediately revokes all tokens matching family_id!
+   ===&gt; Both legitimate user and attacker are logged out. Account secured!
+</code></pre></div>
+
+<ul>
+<li><strong>Single-Use Tokens:</strong> Every refresh token can only be exchanged once. The moment it is presented to the <code>/token</code> endpoint, the IdP invalidates it and issues a fresh one.</li>
+<li><strong>Lineage Tracking with <code>family_id</code>:</strong> All refresh tokens generated in a continuous session share an immutable <code>family_id</code>.</li>
+<li><strong>Automatic Intrusion Detection:</strong> If the IdP receives a refresh token that is already flagged as <code>used == true</code>, it knows with 100% certainty that either a network race occurred or a stolen token is being replayed. The IdP executes an atomic transaction that invalidates every token in that <code>family_id</code>, forces a full re-login, and triggers an email security alert!</li>
+</ul>
+
+<h2 id="sso-deep-dive-4-key-rotation-and-jwks">Deep Dive 4: Zero-Downtime Asymmetric Key Rotation</h2>
+
+<p>How do we rotate cryptographic signing keys without causing a fleet-wide authentication blackout?</p>
+
+<h4>1. Hardware Security Module (HSM) &amp; Cloud KMS</h4>
+<p>Private signing keys <strong>never exist in application memory</strong>. The token endpoint passes the JWT payload to Cloud KMS/HSM via an internal RPC: <code>kms.sign(payload, key_version)</code>. If an attacker gains remote code execution on the IdP web servers, they cannot dump the private key!</p>
+
+<h4>2. Overlapping Dual-Key Rotation Protocol:</h4>
+<div class="code-wrap"><div class="code-header"><span>Graceful Key Rotation Timeline</span><button class="copy-button" type="button">Copy</button></div><pre><code>Phase 1 (Publish Key 2):
+- Generate Keypair K2.
+- Publish BOTH K1 and K2 in /.well-known/jwks.json:
+  { "keys": [ { "kid": "k1", ... }, { "kid": "k2", ... } ] }
+- Continue signing new tokens using K1.
+- Wait for all Resource Servers to refresh their JWKS cache (e.g. 2 hours).
+
+Phase 2 (Switch Signing to Key 2):
+- Update IdP token minting to sign new JWTs with K2 (header kid: "k2").
+- In-flight tokens signed with K1 continue to verify because K1 is still in JWKS.
+
+Phase 3 (Retire Key 1):
+- Wait max access token TTL (e.g. 15 minutes).
+- Now, ZERO live tokens signed with K1 exist in the wild!
+- Safely remove K1 from JWKS and archive in KMS.
+===&gt; Zero failed requests, zero downtime!
+</code></pre></div>
+
+<h2 id="sso-api-design-and-data-models">API Design &amp; Data Schemas</h2>
+
+<h3>Standard OIDC &amp; OAuth 2.0 Endpoints</h3>
+<div class="code-wrap"><div class="code-header"><span>OAuth 2.0 / OIDC API Definitions</span><button class="copy-button" type="button">Copy</button></div><pre><code>GET /authorize
+  ?response_type=code
+  &amp;client_id=spotify_web
+  &amp;redirect_uri=https://open.spotify.com/callback
+  &amp;scope=openid%20profile%20email%20playlist-read
+  &amp;state=c2VjdXJlX2NzcmZfdG9rZW4
+  &amp;code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM
+  &amp;code_challenge_method=S256
+  -&gt; 302 Redirect to consent / callback
+
+POST /token (Authorization Code Exchange)
+  Content-Type: application/x-www-form-urlencoded
+  grant_type=authorization_code
+  &amp;code=SplxlOBeZQQYbYS6WxSbIA
+  &amp;redirect_uri=https://open.spotify.com/callback
+  &amp;client_id=spotify_web
+  &amp;code_verifier=dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk
+  -&gt; 200 OK
+  {
+    "access_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImsyIi...",
+    "token_type": "Bearer",
+    "expires_in": 900,
+    "refresh_token": "rt_8f192b49c0184e9d...",
+    "id_token": "eyJhbGciOiJSUzI1NiIsImtpZCI6ImsyIi...",
+    "scope": "openid profile email playlist-read"
+  }
+
+POST /token (Silent Refresh)
+  grant_type=refresh_token
+  &amp;refresh_token=rt_8f192b49c0184e9d...
+  &amp;client_id=spotify_web
+  -&gt; 200 OK { new access_token, new rotated refresh_token, expires_in }
+
+POST /revoke (RFC 7009)
+  token=rt_8f192b49c0184e9d...
+  &amp;token_type_hint=refresh_token
+  -&gt; 200 OK (Idempotent)
+
+GET /.well-known/jwks.json
+  -&gt; 200 OK { "keys": [ { "kty": "RSA", "kid": "k2", "use": "sig", "n": "...", "e": "AQAB" } ] }
+</code></pre></div>
+
+<h3>Decoded Access Token JWT Payload:</h3>
+<div class="code-wrap"><div class="code-header"><span>JWT Claims Payload</span><button class="copy-button" type="button">Copy</button></div><pre><code>{
+  "iss": "https://accounts.google.com",
+  "sub": "usr_9481948201",
+  "aud": ["https://mail.google.com/api", "https://drive.google.com/api"],
+  "azp": "spotify_web_app",
+  "scope": "openid email read:calendar",
+  "iat": 1754179200,
+  "exp": 1754180100,
+  "jti": "at_7c1e8a93bf02"
+}
+</code></pre></div>
+
+<h3>Data Storage Strategy (SQL vs. NoSQL Split)</h3>
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Data Entity</th>
+<th>Storage Engine</th>
+<th>Partition / Shard Key</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Clients &amp; Apps (<code>clients</code>)</strong></td>
+<td>Relational DB (PostgreSQL)</td>
+<td><code>client_id</code></td>
+<td>Strict relational integrity, low write volume, complex queries on client configurations and redirect URI allowlists.</td>
+</tr>
+<tr>
+<td><strong>User Consents (<code>consents</code>)</strong></td>
+<td>Relational DB (PostgreSQL)</td>
+<td>Composite <code>(user_id, client_id)</code></td>
+<td>Strong consistency required when users grant or revoke application privileges.</td>
+</tr>
+<tr>
+<td><strong>Refresh Tokens (<code>refresh_tokens</code>)</strong></td>
+<td>Distributed KV (Cassandra / DynamoDB)</td>
+<td><code>token_hash</code></td>
+<td>High write churn, single-key lookups. Store SHA-256 hash of token, never plaintext! Secondary index on <code>family_id</code> and <code>user_id</code>.</td>
+</tr>
+<tr>
+<td><strong>SSO Sessions (<code>sso_sessions</code>)</strong></td>
+<td>Distributed In-Memory KV (Redis)</td>
+<td><code>session_id</code></td>
+<td>Sub-millisecond reads for cookie validation. Native TTL auto-expiration. Replicated active-active.</td>
+</tr>
+<tr>
+<td><strong>Authorization Codes (<code>auth_codes</code>)</strong></td>
+<td>In-Memory Cache (Redis)</td>
+<td><code>code_hash</code></td>
+<td>Extremely ephemeral (60 second TTL, single-use). Loss on node crash is benign (user simply clicks login again).</td>
+</tr>
+<tr>
+<td><strong>Revocation Events (<code>revocation_log</code>)</strong></td>
+<td>Distributed Log (Kafka)</td>
+<td>Partitioned by <code>user_id</code></td>
+<td>High-throughput streaming fanout to all fleet resource servers. Durable replay buffer for newly spawned instances.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="sso-bottlenecks-and-trade-offs">Bottlenecks &amp; Trade-Offs</h2>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Architectural Decision</th>
+<th>Advantages Gained</th>
+<th>Trade-offs / Mitigations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Offline JWTs vs. Opaque Introspection</strong></td>
+<td>Enables 100M validations/sec with sub-ms local latency. Decouples IdP uptime from fleet uptime.</td>
+<td>Tokens cannot be instantly cancelled for free. Mitigated via 15-min short TTL + Kafka CDC in-memory revocation broadcasting.</td>
+</tr>
+<tr>
+<td><strong>Split Token Strategy (JWT Access + Opaque Refresh)</strong></td>
+<td>Applies optimal design to each access pattern: high-volume reads verify offline; high-privilege writes verify centrally.</td>
+<td>Dual storage logic. Two different token lifecycle pipelines to monitor and manage.</td>
+</tr>
+<tr>
+<td><strong>Single-Use Refresh Token Rotation</strong></td>
+<td>Converts a leaked refresh token from an indefinite compromise into an automated tripwire that detects theft.</td>
+<td>Concurrent client race conditions can trigger false-positive revocations. Mitigated with a brief 5-second grace window for in-flight requests.</td>
+</tr>
+<tr>
+<td><strong>KMS Hardware Signing with Overlapping JWKS</strong></td>
+<td>Zero-downtime key rotation. Master private keys are physically isolated from app server compromise.</td>
+<td>KMS calls incur cryptographic latency. Mitigated by caching connection pools and using fast elliptic curve (ES256) keys.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h6>Test Your Knowledge</h6>
+<p>Answer the question below to find your gaps.</p>
+<p>Mark as read</p>
+<p>Next: How Shopify Moved Inventory Reservations from Redis to MySQL</p>
+<p>&lt;div class="comments-container w-full max-w-full min-w-0 overflow-x-hidden overflow-y-hidden pb-6"</p>
+</div>
+      </section>
+
+
 
       <section class="page-view" id="in-the-wild-shopify-inventory-reservations" data-topic-title="Real-World Architecture" data-page-title="How Shopify Moved Inventory Reservations from Redis to MySQL">
         <header class="page-header">
