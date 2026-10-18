@@ -7117,8 +7117,6 @@ Similarly, if Database 2 (at position 25) fails:</p>
 <h2 id="security-interactive-mitm-pki-architecture">How SSL/TLS Prevents Man-in-the-Middle (MITM) Attacks (Visual Architecture)</h2>
 <p>The interactive diagram below visualizes the exact workflow of Certificate Issuance, Client Handshake, and why a Man-in-the-Middle (MITM) attacker is mathematically barred from impersonating the target website.</p>
 
-
-
 <div class="arch-diagram-wrap" style="margin: 2rem 0; background: #0f1015; border: 1px solid #282a35; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 36px rgba(0,0,0,0.6);">
   <div class="arch-header" style="background: #171821; border-bottom: 1px solid #282a35; padding: 0.9rem 1.4rem; display: flex; justify-content: space-between; align-items: center;">
     <div style="display: flex; align-items: center; gap: 0.6rem; font-weight: 700; color: #fff; font-size: 1rem;">
@@ -7129,299 +7127,214 @@ Similarly, if Database 2 (at position 25) fails:</p>
       <span>PKI Certificate Architecture &amp; Man-in-the-Middle (MITM) Prevention</span>
     </div>
     <span style="font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; padding: 0.25rem 0.65rem; border-radius: 999px; background: rgba(0, 184, 163, 0.15); color: var(--easy); border: 1px solid rgba(0, 184, 163, 0.35);">
-      Complete End-to-End Visual Sequence [1] &rarr; [6]
+      Visual Sequence [1] &rarr; [6]
     </span>
   </div>
 
   <div style="padding: 1.25rem; overflow-x: auto; background: radial-gradient(circle at 50% 10%, #1a1c26 0%, #0d0e12 80%);">
-    <svg viewBox="0 0 1000 700" style="width: 100%; min-width: 820px; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+    <svg viewBox="0 0 960 640" style="width: 100%; min-width: 800px; height: auto; display: block; margin: 0 auto;" xmlns="http://www.w3.org/2000/svg" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
       <defs>
         <!-- Arrowhead Markers -->
-        <marker id="arrow-pki-purple" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <marker id="arrow-purple" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
           <polygon points="0 0, 9 4.5, 0 9" fill="#c084fc"/>
         </marker>
-        <marker id="arrow-pki-blue" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <marker id="arrow-blue" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
           <polygon points="0 0, 9 4.5, 0 9" fill="#38bdf8"/>
         </marker>
-        <marker id="arrow-pki-green" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <marker id="arrow-green" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
           <polygon points="0 0, 9 4.5, 0 9" fill="#00b8a3"/>
         </marker>
-        <marker id="arrow-pki-red" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+        <marker id="arrow-red" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
           <polygon points="0 0, 9 4.5, 0 9" fill="#ef4444"/>
         </marker>
 
-        <!-- Drop shadow filter -->
-        <filter id="boxShadow" x="-10%" y="-10%" width="120%" height="120%">
-          <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.45"/>
+        <!-- Drop Shadow Filter -->
+        <filter id="pkiShadow" x="-10%" y="-10%" width="120%" height="120%">
+          <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#000" flood-opacity="0.45"/>
         </filter>
       </defs>
 
       <!-- ========================================================
            BOX 1: CA - CERTIFICATION AUTHORITY (Top Center-Right)
            ======================================================== -->
-      <g filter="url(#boxShadow)">
-        <rect x="420" y="30" width="460" height="155" rx="12" fill="#1b1728" stroke="#a855f7" stroke-width="2"/>
-        <rect x="435" y="44" width="220" height="24" rx="4" fill="#a855f7" fill-opacity="0.18"/>
-        <text x="445" y="61" fill="#c084fc" font-size="13" font-weight="700">🏛️ CA — Certification Authority</text>
-        <text x="750" y="60" fill="#a855f7" font-size="11" font-weight="700" letter-spacing="0.5">ROOT OF TRUST</text>
+      <g filter="url(#pkiShadow)">
+        <rect x="380" y="25" width="480" height="140" rx="10" fill="#1b1728" stroke="#a855f7" stroke-width="2"/>
+        <rect x="395" y="38" width="230" height="24" rx="4" fill="#a855f7" fill-opacity="0.2"/>
+        <text x="405" y="55" fill="#c084fc" font-size="13" font-weight="700">🏛️ CA — Certification Authority</text>
+        <text x="735" y="54" fill="#a855f7" font-size="11" font-weight="700" letter-spacing="0.5">ROOT OF TRUST</text>
 
-        <text x="440" y="92" fill="#e2e8f0" font-size="12.5">• Checks website is legitimate (domain ownership, legal docs, DNS).</text>
-        <text x="440" y="114" fill="#e2e8f0" font-size="12.5">• Returns signed cipher text (SSL/TLS Certificate) using </text>
-        <text x="762" y="114" fill="#c084fc" font-size="12.5" font-weight="700" font-family="monospace">ca_private_key</text>
-        <text x="440" y="136" fill="#cbd5e1" font-size="12">• This certificate contains all the metadata of the website + </text>
-        <text x="778" y="136" fill="#2dd4bf" font-size="12" font-family="monospace">website_pubkey</text>
-        <text x="440" y="158" fill="#94a3b8" font-size="11.5">• Its corresponding ca_public_key is permanently pre-installed in all modern OSs.</text>
+        <text x="400" y="84" fill="#e2e8f0" font-size="12">• Checks website is legitimate (domain ownership, legal docs, DNS).</text>
+        <text x="400" y="104" fill="#e2e8f0" font-size="12">• Returns signed cipher text (SSL/TLS Certificate) using </text>
+        <text x="710" y="104" fill="#c084fc" font-size="12" font-weight="700" font-family="monospace">ca_private_key</text>
+        <text x="400" y="124" fill="#cbd5e1" font-size="12">• This certificate contains all metadata of the website + </text>
+        <text x="726" y="124" fill="#2dd4bf" font-size="12" font-family="monospace">website_pubkey</text>
+        <text x="400" y="144" fill="#94a3b8" font-size="11.5">• Its corresponding ca_public_key is permanently pre-installed in all modern OSs.</text>
       </g>
 
       <!-- ========================================================
            BOX 2: WEBSITE (Origin Server - Right Center)
            ======================================================== -->
-      <g filter="url(#boxShadow)">
-        <rect x="640" y="260" width="320" height="155" rx="12" fill="#112421" stroke="#00b8a3" stroke-width="2"/>
-        <rect x="655" y="274" width="165" height="24" rx="4" fill="#00b8a3" fill-opacity="0.18"/>
-        <text x="665" y="291" fill="#00b8a3" font-size="13" font-weight="700">🌐 Website (Origin Server)</text>
-        <text x="860" y="290" fill="#00b8a3" font-size="11" font-weight="700" letter-spacing="0.5">KEY VAULT</text>
+      <g filter="url(#pkiShadow)">
+        <rect x="620" y="225" width="320" height="150" rx="10" fill="#112421" stroke="#00b8a3" stroke-width="2"/>
+        <rect x="635" y="238" width="170" height="24" rx="4" fill="#00b8a3" fill-opacity="0.2"/>
+        <text x="645" y="255" fill="#00b8a3" font-size="13" font-weight="700">🌐 Website (Origin Server)</text>
+        <text x="835" y="254" fill="#00b8a3" font-size="11" font-weight="700" letter-spacing="0.5">KEY VAULT</text>
 
-        <text x="660" y="322" fill="#e2e8f0" font-size="12.5">• OpenSSL creates Keypair:</text>
-        <text x="675" y="342" fill="#2dd4bf" font-size="12" font-family="monospace" font-weight="600">(website_private_key, website_public_key)</text>
-        <text x="660" y="366" fill="#e2e8f0" font-size="12.5">• Stores private key safely in KMS / Vault.</text>
-        <text x="660" y="390" fill="#cbd5e1" font-size="12">• Delivers signed certificate to connecting clients.</text>
+        <text x="640" y="284" fill="#e2e8f0" font-size="12">• OpenSSL creates Keypair:</text>
+        <text x="655" y="304" fill="#2dd4bf" font-size="12" font-family="monospace" font-weight="600">(website_private_key, website_public_key)</text>
+        <text x="640" y="328" fill="#e2e8f0" font-size="12">• Stores private key safely in KMS / Vault.</text>
+        <text x="640" y="352" fill="#cbd5e1" font-size="12">• Delivers signed certificate to connecting clients.</text>
       </g>
 
       <!-- ========================================================
            BOX 3: CLIENT (Browser / OS - Left Center)
            ======================================================== -->
-      <g filter="url(#boxShadow)">
-        <rect x="40" y="250" width="340" height="175" rx="12" fill="#132032" stroke="#38bdf8" stroke-width="2"/>
-        <rect x="55" y="264" width="180" height="24" rx="4" fill="#38bdf8" fill-opacity="0.18"/>
-        <text x="65" y="281" fill="#38bdf8" font-size="13" font-weight="700">💻 Client (Browser / OS)</text>
-        <text x="265" y="280" fill="#38bdf8" font-size="11" font-weight="700" letter-spacing="0.5">VERIFIER</text>
+      <g filter="url(#pkiShadow)">
+        <rect x="20" y="215" width="340" height="170" rx="10" fill="#132032" stroke="#38bdf8" stroke-width="2"/>
+        <rect x="35" y="228" width="185" height="24" rx="4" fill="#38bdf8" fill-opacity="0.2"/>
+        <text x="45" y="245" fill="#38bdf8" font-size="13" font-weight="700">💻 Client (Browser / OS)</text>
+        <text x="250" y="244" fill="#38bdf8" font-size="11" font-weight="700" letter-spacing="0.5">VERIFIER</text>
 
-        <text x="60" y="312" fill="#e2e8f0" font-size="12.5">• Contains all CAs' public keys pre-installed</text>
-        <text x="75" y="332" fill="#93c5fd" font-size="12" font-family="monospace">in modern machines (ca_public_key).</text>
-        <text x="60" y="356" fill="#e2e8f0" font-size="12.5">• Client decrypts/verifies the SSL/TLS Certificate</text>
-        <text x="75" y="376" fill="#38bdf8" font-size="12.5" font-weight="700">using the trusted ca_public_key.</text>
-        <text x="60" y="400" fill="#cbd5e1" font-size="12">• Extracts verified website_public_key safely.</text>
+        <text x="40" y="275" fill="#e2e8f0" font-size="12">• Contains all CAs' public keys pre-installed</text>
+        <text x="55" y="295" fill="#93c5fd" font-size="12" font-family="monospace">in modern machines (ca_public_key).</text>
+        <text x="40" y="319" fill="#e2e8f0" font-size="12">• Client decrypts/verifies the SSL/TLS Certificate</text>
+        <text x="55" y="339" fill="#38bdf8" font-size="12" font-weight="700">using the trusted ca_public_key.</text>
+        <text x="40" y="363" fill="#cbd5e1" font-size="12">• Extracts verified website_public_key safely.</text>
       </g>
 
       <!-- ========================================================
            BOX 4: HACKER MITM (Man in the middle - Bottom Left)
            ======================================================== -->
-      <g filter="url(#boxShadow)">
-        <rect x="40" y="520" width="340" height="145" rx="12" fill="#2c1417" stroke="#ef4444" stroke-width="2"/>
-        <rect x="55" y="534" width="225" height="24" rx="4" fill="#ef4444" fill-opacity="0.18"/>
-        <text x="65" y="551" fill="#ef4444" font-size="13" font-weight="700">🦹 Hacker MITM (Man in the middle)</text>
+      <g filter="url(#pkiShadow)">
+        <rect x="20" y="475" width="340" height="140" rx="10" fill="#2c1417" stroke="#ef4444" stroke-width="2"/>
+        <rect x="35" y="488" width="230" height="24" rx="4" fill="#ef4444" fill-opacity="0.2"/>
+        <text x="45" y="505" fill="#ef4444" font-size="13" font-weight="700">🦹 Hacker MITM (Man in the middle)</text>
 
-        <text x="60" y="582" fill="#fca5a5" font-size="12.5">• Wears a mask and tries to convince the client</text>
-        <text x="75" y="602" fill="#fca5a5" font-size="12.5">that he is the original website.</text>
-        <text x="60" y="626" fill="#ef4444" font-size="12" font-weight="600">• Intercepts connection &amp; sends Fake Certificate.</text>
+        <text x="40" y="535" fill="#fca5a5" font-size="12">• Wears a mask and tries to convince the client</text>
+        <text x="55" y="555" fill="#fca5a5" font-size="12">that he is the original website.</text>
+        <text x="40" y="580" fill="#ef4444" font-size="12" font-weight="700">• Intercepts connection &amp; sends Fake Certificate.</text>
       </g>
 
       <!-- ========================================================
-           FLOW ARROWS & INTERACTIVE PILLS
+           FLOW ARROWS & STEP BADGES
            ======================================================== -->
 
       <!-- [1] Website -> CA: Request CRT / CSR -->
-      <path d="M 760 260 L 670 185" stroke="#c084fc" stroke-width="2.5" fill="none" marker-end="url(#arrow-pki-purple)"/>
-      <g transform="translate(685, 205)">
-        <rect x="-10" y="-12" width="135" height="22" rx="4" fill="#1b1728" stroke="#a855f7" stroke-width="1.2"/>
-        <text x="0" y="3" fill="#c084fc" font-size="11.5" font-weight="700">[1] Request CRT ↗</text>
+      <path d="M 720 225 L 650 170" stroke="#c084fc" stroke-width="2.5" fill="none" marker-end="url(#arrow-purple)"/>
+      <g transform="translate(660, 185)">
+        <rect x="-8" y="-12" width="130" height="22" rx="4" fill="#1b1728" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="0" y="3" fill="#c084fc" font-size="11" font-weight="700">[1] Request CRT ↗</text>
       </g>
 
       <!-- [2] CA -> Website: Return Signed SSL/TLS Cert -->
-      <path d="M 600 185 L 690 260" stroke="#c084fc" stroke-width="2" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-pki-purple)"/>
-      <g transform="translate(485, 225)">
-        <rect x="-10" y="-12" width="195" height="22" rx="4" fill="#1b1728" stroke="#a855f7" stroke-width="1.2"/>
-        <text x="0" y="3" fill="#e9d5ff" font-size="11" font-weight="600">[2] Signed Cert (ca_priv_key) ↘</text>
+      <path d="M 570 170 L 640 225" stroke="#c084fc" stroke-width="2" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-purple)"/>
+      <g transform="translate(470, 205)">
+        <rect x="-8" y="-12" width="185" height="22" rx="4" fill="#1b1728" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="0" y="3" fill="#e9d5ff" font-size="10.5" font-weight="600">[2] Signed Cert (ca_priv_key) ↘</text>
       </g>
 
       <!-- [3] Client -> Website: Request Public Key -->
-      <path d="M 380 305 L 635 305" stroke="#38bdf8" stroke-width="2.5" fill="none" marker-end="url(#arrow-pki-blue)"/>
-      <g transform="translate(430, 292)">
-        <rect x="-10" y="-12" width="165" height="22" rx="4" fill="#132032" stroke="#38bdf8" stroke-width="1.2"/>
-        <text x="0" y="3" fill="#7dd3fc" font-size="11.5" font-weight="700">[3] Request Public Key ➔</text>
+      <path d="M 360 270 L 615 270" stroke="#38bdf8" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)"/>
+      <g transform="translate(415, 258)">
+        <rect x="-8" y="-12" width="165" height="22" rx="4" fill="#132032" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="0" y="3" fill="#7dd3fc" font-size="11" font-weight="700">[3] Request Public Key ➔</text>
       </g>
 
       <!-- [4] Website -> Client: Return Signed Certificate -->
-      <path d="M 640 375 L 385 375" stroke="#00b8a3" stroke-width="2.5" fill="none" marker-end="url(#arrow-pki-green)"/>
-      <g transform="translate(400, 390)">
-        <rect x="-10" y="-12" width="225" height="22" rx="4" fill="#112421" stroke="#00b8a3" stroke-width="1.2"/>
-        <text x="0" y="3" fill="#5eead4" font-size="11.5" font-weight="700">⬅ [4] Return Signed SSL/TLS Cert</text>
+      <path d="M 620 335 L 365 335" stroke="#00b8a3" stroke-width="2.5" fill="none" marker-end="url(#arrow-green)"/>
+      <g transform="translate(385, 348)">
+        <rect x="-8" y="-12" width="220" height="22" rx="4" fill="#112421" stroke="#00b8a3" stroke-width="1.2"/>
+        <text x="0" y="3" fill="#5eead4" font-size="11" font-weight="700">⬅ [4] Return Signed SSL/TLS Cert</text>
       </g>
 
       <!-- [5] Hacker -> Client: Return Fake Cert / Wrong Key -->
-      <path d="M 160 520 L 160 430" stroke="#ef4444" stroke-width="2.5" fill="none" marker-end="url(#arrow-pki-red)"/>
-      <g transform="translate(50, 475)">
-        <rect x="-8" y="-12" width="105" height="22" rx="4" fill="#2c1417" stroke="#ef4444" stroke-width="1.2"/>
-        <text x="0" y="3" fill="#fca5a5" font-size="11" font-weight="700">[5] Fake Cert ⬆</text>
+      <path d="M 130 475 L 130 390" stroke="#ef4444" stroke-width="2.5" fill="none" marker-end="url(#arrow-red)"/>
+      <g transform="translate(45, 435)">
+        <rect x="-6" y="-12" width="95" height="22" rx="4" fill="#2c1417" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="0" y="3" fill="#fca5a5" font-size="10.5" font-weight="700">[5] Fake Cert ⬆</text>
       </g>
 
       <!-- [6] REJECTION PATH: Client -> Hacker XX Blocked! -->
-      <path d="M 260 425 L 260 520" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" fill="none"/>
+      <path d="M 230 390 L 230 475" stroke="#ef4444" stroke-width="2" stroke-dasharray="4,4" fill="none"/>
 
       <!-- Red Cross Lines on the attack path -->
-      <line x1="245" y1="465" x2="275" y2="485" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
-      <line x1="275" y1="465" x2="245" y2="485" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="215" y1="425" x2="245" y2="445" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="245" y1="425" x2="215" y2="445" stroke="#ef4444" stroke-width="3.5" stroke-linecap="round"/>
 
-      <!-- Cross/Slash lines (as drawn in user's image) -->
-      <line x1="275" y1="495" x2="295" y2="475" stroke="#ef4444" stroke-width="2.5"/>
-      <line x1="282" y1="495" x2="302" y2="475" stroke="#ef4444" stroke-width="2.5"/>
+      <!-- Double-slash cut marks (as drawn in user's image) -->
+      <line x1="245" y1="455" x2="265" y2="435" stroke="#ef4444" stroke-width="2.5"/>
+      <line x1="252" y1="455" x2="272" y2="435" stroke="#ef4444" stroke-width="2.5"/>
 
       <!-- ========================================================
            BOX 5: CLIENT REJECTION CALLOUT (Bottom Right)
            ======================================================== -->
-      <g filter="url(#boxShadow)">
-        <rect x="420" y="520" width="540" height="145" rx="12" fill="#241114" stroke="#ef4444" stroke-width="2"/>
-        <rect x="435" y="534" width="310" height="24" rx="4" fill="#ef4444" fill-opacity="0.2"/>
-        <text x="445" y="551" fill="#ef4444" font-size="12.5" font-weight="800">❌ [6] XX — CLIENT REJECTS &amp; BLOCKS!</text>
+      <g filter="url(#pkiShadow)">
+        <rect x="400" y="475" width="540" height="140" rx="10" fill="#241114" stroke="#ef4444" stroke-width="2"/>
+        <rect x="415" y="488" width="310" height="24" rx="4" fill="#ef4444" fill-opacity="0.2"/>
+        <text x="425" y="505" fill="#ef4444" font-size="12.5" font-weight="800">❌ [6] XX — CLIENT REJECTS &amp; BLOCKS!</text>
 
-        <text x="440" y="582" fill="#fca5a5" font-size="13" font-weight="700">• Can't decrypt/verify the Cipher text!</text>
-        <text x="440" y="604" fill="#e2e8f0" font-size="12.5">• Since CA didn't sign with its private key,</text>
-        <text x="700" y="604" fill="#ef4444" font-size="12.5" font-weight="800">so Client REJECTS.</text>
-        <text x="440" y="626" fill="#fca5a5" font-size="12">• Mathematical check fails &rarr; Browser throws </text>
-        <text x="688" y="626" fill="#ef4444" font-size="12" font-family="monospace" font-weight="700">NET::ERR_CERT_AUTHORITY_INVALID</text>
-        <text x="440" y="648" fill="#94a3b8" font-size="11.5">• Eavesdropper is 100% locked out. ZERO plain text data is ever transmitted!</text>
+        <text x="420" y="534" fill="#fca5a5" font-size="12.5" font-weight="700">• Can't decrypt/verify the Cipher text!</text>
+        <text x="420" y="554" fill="#e2e8f0" font-size="12">• Since CA didn't sign with its private key,</text>
+        <text x="670" y="554" fill="#ef4444" font-size="12" font-weight="800">so Client REJECTS.</text>
+        <text x="420" y="576" fill="#fca5a5" font-size="11.5">• Mathematical signature check fails &rarr; Browser throws </text>
+        <text x="668" y="576" fill="#ef4444" font-size="11.5" font-family="monospace" font-weight="700">NET::ERR_CERT_AUTHORITY_INVALID</text>
+        <text x="420" y="598" fill="#94a3b8" font-size="11">• Eavesdropper is 100% blocked. ZERO plain text data is ever transmitted!</text>
       </g>
     </svg>
   </div>
 </div>
 
-
-
-  <!-- MIDDLE: Client <---> Flow Arrows <---> Website -->
-  <div class="pki-middle-grid">
-    <!-- LEFT: Client -->
-    <div class="pki-node-box pki-node-client">
-      <div class="pki-node-badge badge-client">Verifier</div>
-      <div class="pki-node-title">💻 Client (Browser / OS)</div>
-      <ul class="pki-node-list">
-        <li><strong>Pre-installed Root Store:</strong> Ships with all trusted CAs' public keys (<code>ca_public_key</code>).</li>
-        <li><strong>Verifies Signature:</strong> Decrypts/validates SSL/TLS certificate using <code>ca_public_key</code>.</li>
-        <li><strong>Safe Key Extraction:</strong> Extracts trusted <code>website_public_key</code> to establish encrypted session.</li>
-      </ul>
-    </div>
-
-    <!-- CENTER: Sequential Flow Arrows -->
-    <div class="pki-flow-column">
-      <div class="pki-flow-arrow" style="border-left: 3px solid #c084fc;">
-        <span class="pki-seq-badge badge-seq-ca">1</span>
-        <span><strong>Request CRT:</strong> Website asks CA for cert &nearr;</span>
-      </div>
-      <div class="pki-flow-arrow" style="border-left: 3px solid #c084fc;">
-        <span class="pki-seq-badge badge-seq-ca">2</span>
-        <span><strong>Signed Cert:</strong> CA signs with <code>ca_private_key</code> &searr;</span>
-      </div>
-      <div class="pki-flow-arrow" style="border-left: 3px solid #38bdf8;">
-        <span class="pki-seq-badge">3</span>
-        <span><strong>Request Public Key:</strong> Client connects &rarr;</span>
-      </div>
-      <div class="pki-flow-arrow" style="border-left: 3px solid #00b8a3;">
-        <span class="pki-seq-badge badge-seq-web">4</span>
-        <span><strong>Returns Signed Cert:</strong> (has <code>website_pubkey</code>) &larr;</span>
-      </div>
-    </div>
-
-    <!-- RIGHT: Website -->
-    <div class="pki-node-box pki-node-website">
-      <div class="pki-node-badge badge-website">Origin Server</div>
-      <div class="pki-node-title">🌐 Website (Origin Server)</div>
-      <ul class="pki-node-list">
-        <li><strong>OpenSSL Keypair:</strong> Generates <code>(website_private_key, website_public_key)</code>.</li>
-        <li><strong>Secret Storage:</strong> Stores <code>website_private_key</code> safely in vault/KMS.</li>
-        <li><strong>Presents Cert:</strong> Delivers CA-signed certificate to connecting clients.</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- BOTTOM: Hacker MITM & Client Defense -->
-  <div class="pki-bottom-grid">
-    <div class="pki-node-box pki-node-hacker">
-      <div class="pki-node-badge badge-hacker">Adversary</div>
-      <div class="pki-node-title">🦹 Hacker MITM (Man in the Middle)</div>
-      <ul class="pki-node-list">
-        <li>Wears a "mask" to convince client he is the original website.</li>
-        <li>Attempts to intercept traffic &amp; return a counterfeit certificate.</li>
-      </ul>
-    </div>
-
-    <div class="pki-mitm-arrows">
-      <div class="pki-flow-arrow" style="border-left: 3px solid #ef4444;">
-        <span class="pki-seq-badge badge-seq-danger">5</span>
-        <span style="color: #fca5a5;"><strong>Spoof Attempt:</strong> Hacker returns Fake Certificate to Client &nwarr;</span>
-      </div>
-      <div class="pki-rejection-banner">
-        <div class="rejection-badge">❌ [6] CLIENT REJECTS &amp; TERMINATES CONNECTION</div>
-        <p>Client cannot decrypt/verify the signature using <code>ca_public_key</code> because CA never signed it with <code>ca_private_key</code>! Client instantly rejects the connection (<code>NET::ERR_CERT_AUTHORITY_INVALID</code>).</p>
-      </div>
-    </div>
-  </div>
+<div class="table-wrap" style="margin-top: 1.5rem;">
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Phase</th>
+<th>From &rarr; To</th>
+<th>Cryptographic Action &amp; Security Guarantee</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>[1]</strong></td>
+<td><strong>Request CRT (CSR)</strong></td>
+<td>Website &rarr; CA</td>
+<td>Website uses OpenSSL to generate <code>(website_private_key, website_public_key)</code>, safely vaults the private key, and requests a signed certificate from the CA.</td>
+</tr>
+<tr>
+<td><strong>[2]</strong></td>
+<td><strong>Signed Certificate</strong></td>
+<td>CA &rarr; Website</td>
+<td>CA verifies domain ownership, computes hash of metadata + <code>website_public_key</code>, and encrypts hash using <code>ca_private_key</code> to create the tamper-proof SSL/TLS Certificate.</td>
+</tr>
+<tr>
+<td><strong>[3]</strong></td>
+<td><strong>Request Public Key</strong></td>
+<td>Client &rarr; Website</td>
+<td>Client initiates TLS handshake (<code>ClientHello</code>) requesting the server's identity and supported ciphers.</td>
+</tr>
+<tr>
+<td><strong>[4]</strong></td>
+<td><strong>Certificate Delivery</strong></td>
+<td>Website &rarr; Client</td>
+<td>Website returns the signed certificate bundle containing <code>website_public_key</code> and the CA's digital signature.</td>
+</tr>
+<tr>
+<td><strong>[5]</strong></td>
+<td><strong>MITM Spoof Attempt</strong></td>
+<td>Hacker &rarr; Client</td>
+<td>Adversary intercepts connection, "wears a mask", and sends a fake/self-signed certificate containing the attacker's public key.</td>
+</tr>
+<tr>
+<td><strong>[6]</strong></td>
+<td><strong>❌ CLIENT REJECTS</strong></td>
+<td>Client Defense</td>
+<td>Client decrypts the certificate's digital signature using pre-installed <code>ca_public_key</code>. Because the attacker does <strong>NOT</strong> have <code>ca_private_key</code>, verification fails mathematically! The browser terminates the connection immediately (<code>NET::ERR_CERT_AUTHORITY_INVALID</code>).</td>
+</tr>
+</tbody>
+</table>
 </div>
 
-      </div>
-
-      <!-- CLIENT CARD -->
-      <div class="arch-zone zone-client">
-        <div class="arch-zone-header">
-          <span class="arch-zone-title">💻 Client (Web Browser / App)</span>
-          <span class="flow-pill flow-pill-success">Verifies via ca_public_key</span>
-        </div>
-        <div class="arch-elements-stack">
-          <div class="arch-card">
-            <div class="arch-card-name">Pre-Installed Root Store</div>
-            <div class="arch-card-desc">Maintains trusted Root CAs public keys. Uses them to decrypt and verify the CA's signature on any presented SSL/TLS certificate.</div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-card-name">Extracts Trusted Key</div>
-            <div class="arch-card-desc">Once the signature is verified, trusts <code>website_public_key</code> and initiates Diffie-Hellman session key exchange!</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- WEBSITE CARD -->
-      <div class="arch-zone zone-server">
-        <div class="arch-zone-header">
-          <span class="arch-zone-title">🌐 Website / Origin Server</span>
-          <span class="flow-pill flow-pill-success">OpenSSL Keypair</span>
-        </div>
-        <div class="arch-elements-stack">
-          <div class="arch-card">
-            <div class="arch-card-name">Key Generation (OpenSSL / KMS)</div>
-            <div class="arch-card-desc">Creates <code>(website_private_key, website_public_key)</code>. <strong>Private key is stored safely</strong> in HSM or encrypted environment secrets.</div>
-          </div>
-          <div class="arch-card">
-            <div class="arch-card-name">Presents Signed CRT</div>
-            <div class="arch-card-desc">During TLS handshake, sends the CA-signed certificate bundle containing <code>website_public_key</code> to the client.</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- HACKER / MITM CARD -->
-      <div class="arch-zone zone-attacker" style="grid-column: 1 / -1;">
-        <div class="arch-zone-header">
-          <span class="arch-zone-title">🦹 Hacker / MITM (Man in the Middle) — Attack Neutralized</span>
-          <span class="flow-pill flow-pill-danger">Attack Blocked</span>
-        </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem;">
-          <div class="arch-card" style="border-color: #5c2429;">
-            <div class="arch-card-name" style="color: #ef4444;">The Impersonation Attempt</div>
-            <div class="arch-card-desc">Hacker sits on public Wi-Fi or poisons DNS, wearing a "mask" to convince the client that they are the genuine website.</div>
-          </div>
-          <div class="arch-card" style="border-color: #5c2429;">
-            <div class="arch-card-name" style="color: #ef4444;">Sends Fake / Tampered Cert</div>
-            <div class="arch-card-desc">Attacker attempts to return a self-signed or forged certificate containing the hacker's own public key to intercept traffic.</div>
-          </div>
-          <div class="mitm-blocked-card">
-            <div style="font-weight: 700; color: #ef4444; font-size: 0.88rem; margin-bottom: 0.25rem;">Why the Client Rejects It:</div>
-            <div style="font-size: 0.8rem; color: #fca5a5; line-height: 1.45;">
-              The client attempts to decrypt/verify the certificate's signature using trusted <code>ca_public_key</code>s. Because the hacker <strong>does not possess the CA's private key</strong>, the signature is mathematically invalid! The browser aborts instantly with <code>NET::ERR_CERT_AUTHORITY_INVALID</code>.
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</div>
 
 <h2 id="security-the-tls-handshake-step-by-step">The Modern TLS 1.3 Handshake Step-by-Step</h2>
 <p>In older TLS 1.2, establishing an encrypted connection required two round-trips (2-RTT). <strong>TLS 1.3</strong> streamlined this into a blazing-fast <strong>1-RTT handshake</strong> (or 0-RTT for resumed sessions):</p>
