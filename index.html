@@ -607,6 +607,72 @@
 
           </div>
 
+          <div class="tree-node l2-node">
+            <div class="tree-header l2-header">
+              <button class='tree-toggle' type='button' aria-label='Toggle Security &amp; Cryptography'><span class='chevron'>▾</span></button>
+              <a class="nav-item l2-link" href="#core-concepts-security-and-encryption">
+                <span class="nav-title">Security, TLS/SSL &amp; PKI</span>
+              </a>
+            </div>
+
+            <!-- LEVEL 3 (Sections / Anchors) -->
+            <div class="tree-children l3-children">
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-why-security-matters">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Why Security in System Design</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-symmetric-vs-asymmetric">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Symmetric vs Asymmetric Encryption</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-digital-signatures-and-hashing">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Digital Signatures &amp; Hashing</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-pki-and-certificate-authorities">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">PKI &amp; Certificate Authorities (CAs)</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-interactive-mitm-pki-architecture">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">How TLS Prevents MITM (Visual Flow)</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-the-tls-handshake-step-by-step">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">TLS 1.3 Handshake Step-by-Step</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-mtls-for-microservices">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Mutual TLS (mTLS) for Microservices</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-data-at-rest-in-transit-in-use">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">At-Rest, In-Transit &amp; In-Use Encryption</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-common-attacks-and-defenses">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Top Attacks &amp; Defenses (WAF, XSS, CSRF, DDoS)</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#core-concepts-security-and-encryption" data-target-sub="security-interview-checklist">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">System Design Security Checklist</span>
+              </a>
+
+            </div>
+
+          </div>
+
+
         </div>
       </div>
 
@@ -6963,6 +7029,372 @@ Similarly, if Database 2 (at position 25) fails:</p>
 <p>&lt;div class="comments-container w-full max-w-full min-w-0 overflow-x-hidden overflow-y-hidden pb-6"</p>
 </div>
       </section>
+
+      <section class="page-view" id="core-concepts-security-and-encryption" data-topic-title="Core Concepts" data-page-title="Security, TLS/SSL &amp; PKI">
+        <header class="page-header">
+          <span class="page-category-badge">🧱 Core Concepts</span>
+          <h1 class="page-title">Security, TLS/SSL &amp; PKI</h1>
+        </header>
+        <div class="page-body">
+<h1>Security, TLS/SSL &amp; Public Key Infrastructure (PKI)</h1>
+<p>Fundamental guide to securing distributed systems: cryptographic primitives, digital certificates, TLS handshakes, and preventing Man-in-the-Middle (MITM) attacks.</p>
+
+<h2 id="security-why-security-matters">Why Security Matters in System Design</h2>
+<p>In modern system design interviews, security is no longer an afterthought tucked into the final two minutes. With distributed microservices, multi-region cloud deployments, and open APIs, zero-trust network boundaries are mandatory. Failing to protect credentials, data in flight, or access tokens is an instant disqualifier for senior and staff engineering roles.</p>
+<p>The foundation of all internet security relies on three core principles known as the <strong>CIA Triad</strong>:</p>
+<ul>
+  <li><strong>Confidentiality:</strong> Only authorized entities can read the data (solved via encryption).</li>
+  <li><strong>Integrity:</strong> Data cannot be tampered with or modified in transit without detection (solved via cryptographic hashing and digital signatures).</li>
+  <li><strong>Authenticity:</strong> You are communicating with the real party you intended, not an impersonator (solved via Public Key Infrastructure &amp; Certificate Authorities).</li>
+</ul>
+
+<h2 id="security-symmetric-vs-asymmetric">Symmetric vs. Asymmetric Encryption</h2>
+<p>Encryption converts plaintext into unreadable ciphertext using a mathematical cipher and a secret key. Modern architectures leverage two distinct forms of cryptography together:</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>Symmetric Encryption</th>
+<th>Asymmetric (Public Key) Encryption</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Key Structure</strong></td>
+<td>Single shared secret key used for both encryption and decryption.</td>
+<td>Keypair: a <strong>Public Key</strong> (freely shared) and a <strong>Private Key</strong> (kept strictly secret).</td>
+</tr>
+<tr>
+<td><strong>Common Algorithms</strong></td>
+<td><strong>AES-256-GCM</strong>, ChaCha20-Poly1305</td>
+<td><strong>RSA-4096</strong>, <strong>ECDSA</strong>, Ed25519 (Elliptic Curve)</td>
+</tr>
+<tr>
+<td><strong>Computational Speed</strong></td>
+<td>Extremely fast (hardware-accelerated via AES-NI CPU instructions, gigabytes/sec).</td>
+<td>Computationally expensive (~1,000x slower than AES; CPU-bound mathematical operations).</td>
+</tr>
+<tr>
+<td><strong>Primary Problem</strong></td>
+<td><strong>Key Distribution Problem:</strong> How do two strangers securely share the initial key over an untrusted public internet?</td>
+<td>Slow speed and large payload size; cannot encrypt large bulk streams efficiently.</td>
+</tr>
+<tr>
+<td><strong>How System Design Solves It</strong></td>
+<td colspan="2"><strong>Hybrid Cryptography:</strong> Use slow Asymmetric encryption (RSA / Elliptic Curve Diffie-Hellman) for 1 round-trip to authenticate and agree on a temporary symmetric session key, then switch immediately to high-speed AES-256 for all subsequent data transfer!</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="security-digital-signatures-and-hashing">Digital Signatures &amp; Cryptographic Hashing</h2>
+<p>A common beginner confusion is the difference between <em>encryption</em> and <em>signing</em>:</p>
+<ul>
+  <li><strong>Encryption:</strong> Anyone uses the recipient's <strong>Public Key</strong> to encrypt. Only the recipient with the <strong>Private Key</strong> can decrypt. (Guarantees Confidentiality).</li>
+  <li><strong>Digital Signature:</strong> The sender hashes data (e.g. SHA-256) and encrypts that hash using their own <strong>Private Key</strong>. Anyone in the world can decrypt the signature with the sender's <strong>Public Key</strong> to verify that the sender genuinely signed it and that the data was not tampered with! (Guarantees Authenticity &amp; Integrity).</li>
+</ul>
+
+<div class="code-wrap"><div class="code-header"><span>Mathematical Recipe for a Digital Signature</span><button class="copy-button" type="button">Copy</button></div><pre><code>1. Signing (Sender):
+   Signature = Encrypt_with_Private_Key( SHA256( Data ) )
+
+2. Verifying (Recipient / Client):
+   Decrypted_Hash = Decrypt_with_Public_Key( Signature )
+   Computed_Hash  = SHA256( Data )
+   Valid          = (Decrypted_Hash == Computed_Hash)
+</code></pre></div>
+
+<h2 id="security-pki-and-certificate-authorities">Public Key Infrastructure (PKI) &amp; Certificate Authorities (CAs)</h2>
+<p>Suppose you want to talk to <code>https://bank.com</code>. The server sends you its Public Key. But how do you know the public key belongs to the real Bank and not a malicious hacker sitting on your Wi-Fi network who swapped the key with their own?</p>
+<p>This is solved by <strong>Certificate Authorities (CAs)</strong> and the <strong>Chain of Trust</strong>:</p>
+<ol>
+  <li><strong>Certificate Authority (CA):</strong> Globally recognized, heavily audited trusted organizations (e.g., Let's Encrypt, DigiCert, Google Trust Services, Cloudflare).</li>
+  <li><strong>Pre-Installed Root Trust Store:</strong> Modern Operating Systems (macOS Keychain, Windows Trust Store, Linux ca-certificates) and browsers (Google Chrome, Mozilla NSS) come shipped with approximately 150 trusted Root CA public certificates pre-installed.</li>
+  <li><strong>An SSL/TLS Certificate is simply:</strong> The website's Public Key + Domain Name + Expiration Date + <strong>Digital Signature of a trusted CA</strong>!</li>
+</ol>
+
+<h2 id="security-interactive-mitm-pki-architecture">How SSL/TLS Prevents Man-in-the-Middle (MITM) Attacks (Visual Architecture)</h2>
+<p>The interactive diagram below visualizes the exact workflow of Certificate Issuance, Client Handshake, and why a Man-in-the-Middle (MITM) attacker is mathematically barred from impersonating the target website.</p>
+
+<!-- PKI & MITM VISUAL DIAGRAM COMPONENT -->
+<div class="pki-diagram-wrap">
+  <div class="arch-header">
+    <div class="arch-title">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+      </svg>
+      <span>PKI Certificate Issuance &amp; Man-in-the-Middle (MITM) Defense</span>
+    </div>
+    <span class="flow-pill flow-pill-success">Cryptographically Enforced</span>
+  </div>
+
+  <div class="arch-canvas">
+    <!-- SVG Vector Flow Canvas -->
+    <svg viewBox="0 0 950 360" style="width: 100%; height: auto; display: block;" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrow-green" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#00b8a3"/>
+        </marker>
+        <marker id="arrow-purple" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#c084fc"/>
+        </marker>
+        <marker id="arrow-blue" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#38bdf8"/>
+        </marker>
+        <marker id="arrow-red" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <polygon points="0 0, 8 4, 0 8" fill="#ef4444"/>
+        </marker>
+      </defs>
+
+      <!-- Step 1: Website requests CRT from CA -->
+      <path d="M 720 120 L 580 65" stroke="#c084fc" stroke-width="2.5" fill="none" marker-end="url(#arrow-purple)"/>
+      <text x="680" y="78" fill="#c084fc" font-size="11" font-weight="700">1. Request CRT / CSR</text>
+
+      <!-- Step 2: CA issues signed Certificate to Website -->
+      <path d="M 580 85 L 720 140" stroke="#c084fc" stroke-width="2.5" stroke-dasharray="5,4" fill="none" marker-end="url(#arrow-purple)"/>
+      <text x="690" y="112" fill="#c084fc" font-size="11" font-weight="600">2. Signed SSL/TLS Cert (ca_private_key)</text>
+
+      <!-- Step 3: Client requests Public Key from Website -->
+      <path d="M 270 125 L 680 125" stroke="#38bdf8" stroke-width="2.5" fill="none" marker-end="url(#arrow-blue)"/>
+      <text x="475" y="115" fill="#38bdf8" font-size="11" font-weight="700" text-anchor="middle">3. ClientHello (Request Public Key / Cert)</text>
+
+      <!-- Step 4: Website returns Signed Certificate to Client -->
+      <path d="M 680 155 L 270 155" stroke="#00b8a3" stroke-width="2.5" fill="none" marker-end="url(#arrow-green)"/>
+      <text x="475" y="172" fill="#00b8a3" font-size="11" font-weight="700" text-anchor="middle">4. Return Signed Cert (metadata + website_public_key)</text>
+
+      <!-- Step 5: MITM Hacker Interception attempt -->
+      <path d="M 240 280 L 240 220" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="4,4" fill="none" marker-end="url(#arrow-red)"/>
+      <text x="130" y="250" fill="#ef4444" font-size="11" font-weight="700">5. Wrong/Spoofed Key</text>
+
+      <!-- Step 6: Fake Cert returned by Hacker -->
+      <path d="M 260 220 L 260 280" stroke="#ef4444" stroke-width="2.5" fill="none" marker-end="url(#arrow-red)"/>
+      <text x="270" y="250" fill="#ef4444" font-size="11" font-weight="700">Return Fake Cert</text>
+
+      <!-- Block indicator (Crossed Lines) -->
+      <line x1="285" y1="230" x2="315" y2="250" stroke="#ef4444" stroke-width="3"/>
+      <line x1="315" y1="230" x2="285" y2="250" stroke="#ef4444" stroke-width="3"/>
+      <text x="325" y="244" fill="#ef4444" font-size="11" font-weight="700">BLOCKED: CA Signature Mismatch!</text>
+    </svg>
+
+    <!-- Visual Entity Cards -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+      
+      <!-- CA CARD -->
+      <div class="arch-zone zone-ca" style="grid-column: 1 / -1;">
+        <div class="arch-zone-header">
+          <span class="arch-zone-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            🏛️ Certification Authority (CA) — The Root of Trust
+          </span>
+          <span class="flow-pill flow-pill-ca">Signs with ca_private_key</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem;">
+          <div class="arch-card">
+            <div class="arch-card-name">1. Domain &amp; Legal Verification</div>
+            <div class="arch-card-desc">Verifies website ownership via automated ACME DNS/HTTP challenges or legal documentation before issuing certificates.</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-desc"><strong>Signs Certificate:</strong> Computes hash of website metadata + <code>website_public_key</code> and encrypts it using the secret <code>ca_private_key</code>.</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-desc"><strong>Public Trust:</strong> The corresponding <code>ca_public_key</code> is permanently embedded in macOS, Windows, iOS, Android, and web browsers worldwide.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLIENT CARD -->
+      <div class="arch-zone zone-client">
+        <div class="arch-zone-header">
+          <span class="arch-zone-title">💻 Client (Web Browser / App)</span>
+          <span class="flow-pill flow-pill-success">Verifies via ca_public_key</span>
+        </div>
+        <div class="arch-elements-stack">
+          <div class="arch-card">
+            <div class="arch-card-name">Pre-Installed Root Store</div>
+            <div class="arch-card-desc">Maintains trusted Root CAs public keys. Uses them to decrypt and verify the CA's signature on any presented SSL/TLS certificate.</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-name">Extracts Trusted Key</div>
+            <div class="arch-card-desc">Once the signature is verified, trusts <code>website_public_key</code> and initiates Diffie-Hellman session key exchange!</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- WEBSITE CARD -->
+      <div class="arch-zone zone-server">
+        <div class="arch-zone-header">
+          <span class="arch-zone-title">🌐 Website / Origin Server</span>
+          <span class="flow-pill flow-pill-success">OpenSSL Keypair</span>
+        </div>
+        <div class="arch-elements-stack">
+          <div class="arch-card">
+            <div class="arch-card-name">Key Generation (OpenSSL / KMS)</div>
+            <div class="arch-card-desc">Creates <code>(website_private_key, website_public_key)</code>. <strong>Private key is stored safely</strong> in HSM or encrypted environment secrets.</div>
+          </div>
+          <div class="arch-card">
+            <div class="arch-card-name">Presents Signed CRT</div>
+            <div class="arch-card-desc">During TLS handshake, sends the CA-signed certificate bundle containing <code>website_public_key</code> to the client.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HACKER / MITM CARD -->
+      <div class="arch-zone zone-attacker" style="grid-column: 1 / -1;">
+        <div class="arch-zone-header">
+          <span class="arch-zone-title">🦹 Hacker / MITM (Man in the Middle) — Attack Neutralized</span>
+          <span class="flow-pill flow-pill-danger">Attack Blocked</span>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0.75rem;">
+          <div class="arch-card" style="border-color: #5c2429;">
+            <div class="arch-card-name" style="color: #ef4444;">The Impersonation Attempt</div>
+            <div class="arch-card-desc">Hacker sits on public Wi-Fi or poisons DNS, wearing a "mask" to convince the client that they are the genuine website.</div>
+          </div>
+          <div class="arch-card" style="border-color: #5c2429;">
+            <div class="arch-card-name" style="color: #ef4444;">Sends Fake / Tampered Cert</div>
+            <div class="arch-card-desc">Attacker attempts to return a self-signed or forged certificate containing the hacker's own public key to intercept traffic.</div>
+          </div>
+          <div class="mitm-blocked-card">
+            <div style="font-weight: 700; color: #ef4444; font-size: 0.88rem; margin-bottom: 0.25rem;">Why the Client Rejects It:</div>
+            <div style="font-size: 0.8rem; color: #fca5a5; line-height: 1.45;">
+              The client attempts to decrypt/verify the certificate's signature using trusted <code>ca_public_key</code>s. Because the hacker <strong>does not possess the CA's private key</strong>, the signature is mathematically invalid! The browser aborts instantly with <code>NET::ERR_CERT_AUTHORITY_INVALID</code>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<h2 id="security-the-tls-handshake-step-by-step">The Modern TLS 1.3 Handshake Step-by-Step</h2>
+<p>In older TLS 1.2, establishing an encrypted connection required two round-trips (2-RTT). <strong>TLS 1.3</strong> streamlined this into a blazing-fast <strong>1-RTT handshake</strong> (or 0-RTT for resumed sessions):</p>
+
+<div class="timeline-step">
+  <div class="timeline-title">Step 1: ClientHello (1st Half RTT)</div>
+  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">The client sends supported cipher suites, TLS version (1.3), a random nonce, and its <strong>Diffie-Hellman Key Share</strong> (ECDHE parameters).</p>
+</div>
+
+<div class="timeline-step">
+  <div class="timeline-title">Step 2: ServerHello &amp; Certificate (2nd Half RTT)</div>
+  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">The server selects the cipher suite, sends its Diffie-Hellman Key Share, and delivers its <strong>CA-signed SSL/TLS Certificate</strong> + digital signature of the handshake so far.</p>
+</div>
+
+<div class="timeline-step" style="border-left-color: var(--easy); margin-bottom: 0;">
+  <div class="timeline-title" style="color: var(--easy);">Step 3: Verification &amp; Instant Symmetric Encryption</div>
+  <p style="font-size: 0.85rem; color: var(--muted); margin: 0;">The client verifies the certificate against its Root CA store. Both sides combine their Diffie-Hellman shares to calculate the exact same <strong>symmetric session key</strong>. All future requests and responses are encrypted using ultra-fast AES-256-GCM. <strong>Connection is secure!</strong></p>
+</div>
+
+<div class="callout callout-info" style="margin-top: 1.2rem;">
+  <p><strong>Perfect Forward Secrecy (PFS):</strong> In modern TLS with ephemeral Diffie-Hellman (ECDHE), even if an adversary records all encrypted traffic today and steals the server's private key 5 years from now, <em>they still cannot decrypt past recordings</em> because the session keys were generated ephemerally and discarded from RAM immediately after the session ended.</p>
+</div>
+
+<h2 id="security-mtls-for-microservices">Mutual TLS (mTLS) for Internal Microservices</h2>
+<p>Standard HTTPS authenticates the server to the client (one-way). But inside a backend infrastructure (e.g., Kubernetes service mesh with Envoy / Istio):</p>
+<ul>
+  <li><strong>The Problem:</strong> Service A calls Service B over the internal VPC. How does Service B know the request came from Service A and not an infiltrated container?</li>
+  <li><strong>The Solution — Mutual TLS (mTLS):</strong> Both sides present certificates!
+    <ol>
+      <li>Server presents its certificate to authenticate itself to Client.</li>
+      <li>Client also presents a client certificate to authenticate itself to Server.</li>
+      <li>Both verify each other using an internal Private Certificate Authority (e.g., HashiCorp Vault, SPIFFE/SPIRE).</li>
+    </ol>
+  </li>
+  <li><strong>Result:</strong> Zero-trust network security. Even if an attacker gains shell access to the internal network, they cannot spoof RPC calls between microservices without valid cryptographic identity certificates.</li>
+</ul>
+
+<h2 id="security-data-at-rest-in-transit-in-use">Data at Rest, in Transit, and in Use</h2>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Security State</th>
+<th>Description &amp; Threat Model</th>
+<th>Standard System Design Implementations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Data in Transit</strong></td>
+<td>Data moving over network wires between client and server, or between microservices. Threatened by packet sniffing and MITM.</td>
+<td>TLS 1.3, HTTPS, mTLS, SSH, VPN tunnels, HSTS (HTTP Strict Transport Security).</td>
+</tr>
+<tr>
+<td><strong>Data at Rest</strong></td>
+<td>Data stored persistently on physical hard drives, SSDs, or S3/GCS buckets. Threatened by stolen disk drives or physical data center leaks.</td>
+<td>AES-256 block encryption at the storage layer (LUKS, AWS KMS, Cloud KMS, EBS encryption, Transparent Data Encryption).</td>
+</tr>
+<tr>
+<td><strong>Data in Use</strong></td>
+<td>Data actively being loaded into CPU registers and RAM during computations. Threatened by memory dumps and hypervisor compromises.</td>
+<td>Confidential Computing (AMD SEV, Intel SGX hardware enclaves), Homomorphic Encryption, envelope encryption.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="security-common-attacks-and-defenses">Top Web Application Attacks &amp; System Defenses</h2>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Vulnerability</th>
+<th>How the Attack Works</th>
+<th>System Design Defense</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SQL Injection (SQLi)</strong></td>
+<td>Untrusted user input alters backend SQL syntax (e.g. <code>' OR 1=1 --</code>).</td>
+<td>Prepared Statements / Parameterized Queries, ORMs, least-privilege DB users.</td>
+</tr>
+<tr>
+<td><strong>Cross-Site Scripting (XSS)</strong></td>
+<td>Malicious JavaScript injected into web pages and executed in victim browsers to steal session tokens.</td>
+<td>HTML entity encoding, React auto-escaping, <code>HttpOnly</code> cookies (prevents JS access to cookies), Content Security Policy (CSP).</td>
+</tr>
+<tr>
+<td><strong>Cross-Site Request Forgery (CSRF)</strong></td>
+<td>A malicious site tricks an authenticated browser into submitting unauthorized requests to a target API.</td>
+<td><code>SameSite=Strict</code> cookie flag, anti-CSRF synchronizer tokens, custom headers (<code>X-Requested-With</code>).</td>
+</tr>
+<tr>
+<td><strong>Distributed Denial of Service (DDoS)</strong></td>
+<td>Volumetric packet floods (SYN flood, UDP amplification) or Layer 7 HTTP floods overwhelming capacity.</td>
+<td>Anycast DNS routing, Cloudflare / CloudFront CDN edge absorption, Token Bucket Rate Limiting, SYN cookies.</td>
+</tr>
+<tr>
+<td><strong>Man-in-the-Middle (MITM)</strong></td>
+<td>Eavesdropper intercepts and modifies communications between client and server.</td>
+<td>Valid CA-signed TLS certificates, HSTS headers (forces HTTPS permanently), DNSSEC, Certificate Transparency logs.</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="security-interview-checklist">System Design Security Interview Checklist</h2>
+<p>When asked: <em>"How would you secure this system?"</em> in an interview, address these five distinct layers in order:</p>
+<ol>
+  <li><strong>Edge / Perimeter Security:</strong> Cloudflare/CloudFront Anycast CDN, Web Application Firewall (WAF) blocking common OWASP top 10 attacks, and Distributed Rate Limiting.</li>
+  <li><strong>Transport Security:</strong> Enforce HTTPS with TLS 1.3, configure HSTS headers with <code>includeSubDomains; preload</code>, and implement mTLS between all internal backend microservices.</li>
+  <li><strong>Authentication &amp; Session Management:</strong> SSO with OAuth 2.0 / OIDC with PKCE. Asymmetrically signed JWTs verified offline; high-privilege refresh tokens rotated with replay detection. Store tokens in <code>Secure</code>, <code>HttpOnly</code>, <code>SameSite=Strict</code> cookies.</li>
+  <li><strong>Data Protection:</strong> Encrypt all database volumes and object stores at rest with envelope encryption backed by Cloud KMS / HSM. Never log sensitive fields (PII, passwords, credit card numbers, auth tokens).</li>
+  <li><strong>Access Control:</strong> Enforce Role-Based Access Control (RBAC) and least-privilege principles at both the database level and API service boundaries.</li>
+</ol>
+
+<h6>Test Your Knowledge</h6>
+<p>Answer the question below to find your gaps.</p>
+<p>Mark as read</p>
+<p>Next: Real-time Updates</p>
+<p>&lt;div class="comments-container w-full max-w-full min-w-0 overflow-x-hidden overflow-y-hidden pb-6"</p>
+</div>
+      </section>
+
+
 
       <section class="page-view" id="patterns-realtime-updates" data-topic-title="System Design Patterns" data-page-title="Real-time Updates">
         <header class="page-header">
