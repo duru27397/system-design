@@ -222,6 +222,13 @@
       const params = new URLSearchParams(queryPart);
       subId = params.get("sub");
     }
+
+    // Direct aliases for quick deep-linking
+    if (pageId === "core-concepts-double-entry-ledger" || pageId === "connect-double-entry-ledger" || pageId === "double-entry-ledger") {
+      showPage("core-concepts-data-modeling", false, "data-modeling-double-entry-accounting-ledger");
+      return;
+    }
+
     showPage(pageId, false, subId);
   };
 
