@@ -3,7 +3,7 @@
 A compact, dependency-free interactive revision cheat sheet for System Design featuring a 3-level hierarchical navigation tree (Category $\to$ Topic $\to$ Sub-Section/Deep Dive), LeetCode Monaco editor syntax highlighting, and discrete non-scrolling page views across five core domains:
 
 1. **Core Concepts** (9 topics: Networking essentials, API design, data modeling, database indexing, caching, sharding, consistent hashing, CAP theorem, numbers to know)
-2. **System Design Patterns** (7 topics: Realtime updates, dealing with contention, multi-step processes, scaling reads/writes, large blobs, long-running tasks)
+2. **System Design Patterns** (8 topics: Realtime updates, dealing with contention, multi-step processes, scaling reads/writes, large blobs, long-running tasks, double-entry accounting ledger)
 3. **Technology Deep Dives** (14 topics: Kafka, Redis, Cassandra, DynamoDB, Postgres, Elasticsearch, Flink, ZooKeeper, Vector DBs, Time-series DBs, CDC)
 4. **Problem Breakdowns** (32 end-to-end architectures: Yelp, Instagram, Uber, WhatsApp, LeetCode, YouTube, Ticketmaster, Distributed Cache, Rate Limiter, etc.)
 5. **Real-World Architecture** (6 production case studies: Shopify, Discord, Slack, Figma, Spotify, Meta)

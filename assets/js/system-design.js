@@ -224,7 +224,11 @@
     }
 
     // Direct aliases for quick deep-linking
-    if (pageId === "core-concepts-double-entry-ledger" || pageId === "connect-double-entry-ledger" || pageId === "double-entry-ledger") {
+    if (pageId === "double-entry-ledger" || pageId === "patterns-double-entry-accounting-ledger" || pageId === "common-patterns-double-entry-ledger") {
+      showPage("patterns-double-entry-ledger", false, subId);
+      return;
+    }
+    if (pageId === "core-concepts-double-entry-ledger" || pageId === "connect-double-entry-ledger") {
       showPage("core-concepts-data-modeling", false, "data-modeling-double-entry-accounting-ledger");
       return;
     }

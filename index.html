@@ -1167,6 +1167,56 @@
 
           </div>
 
+          <div class="tree-node l2-node">
+            <div class="tree-header l2-header">
+              <button class='tree-toggle' type='button' aria-label='Toggle Double-Entry Accounting Ledger'><span class='chevron'>▾</span></button>
+              <a class="nav-item l2-link" href="#patterns-double-entry-ledger">
+                <span class="nav-title">Double-Entry Ledger</span>
+              </a>
+            </div>
+
+            <!-- LEVEL 3 (Sections / Anchors) -->
+            <div class="tree-children l3-children">
+
+              <a class="nav-item l3-link" href="#patterns-double-entry-ledger" data-target-sub="double-entry-ledger-the-problem">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">The Problem (Why Balances Fail)</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#patterns-double-entry-ledger" data-target-sub="double-entry-ledger-the-solution">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">The Solution (101 Standard)</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#patterns-double-entry-ledger" data-target-sub="double-entry-ledger-5-canonical-account-types">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">5 Canonical Account Types</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#patterns-double-entry-ledger" data-target-sub="double-entry-ledger-schema-and-constraints">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Schema &amp; Constraints</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#patterns-double-entry-ledger" data-target-sub="double-entry-ledger-maintaining-books-walkthrough">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Maintaining Books: $100 Order</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#patterns-double-entry-ledger" data-target-sub="double-entry-ledger-scaling-reads-checkpoints">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Scaling Reads: Snapshots Pattern</span>
+              </a>
+
+              <a class="nav-item l3-link" href="#patterns-double-entry-ledger" data-target-sub="double-entry-ledger-trade-offs">
+                <span class="leaf-dot">•</span>
+                <span class="nav-title">Trade-offs &amp; When to Use</span>
+              </a>
+
+            </div>
+
+          </div>
+
         </div>
       </div>
 
@@ -10583,6 +10633,359 @@ while True:
 <p>Answer the question below to find your gaps.</p>
 <h6>Quick Reference</h6>
 <p>Get a quick-reference sheet for this topic, perfect for last-minute review.</p>
+<p>Mark as read</p>
+<p>Next: Redis</p>
+<p>&lt;div class="comments-container w-full max-w-full min-w-0 overflow-x-hidden overflow-y-hidden pb-6"</p>
+</div>
+      </section>
+
+      <section class="page-view" id="patterns-double-entry-ledger" data-topic-title="System Design Patterns" data-page-title="Double-Entry Accounting Ledger">
+        <header class="page-header">
+          <span class="page-category-badge">📐 System Design Patterns</span>
+          <h1 class="page-title">Double-Entry Accounting Ledger</h1>
+        </header>
+        <div class="page-body">
+<h1>Double-Entry Accounting Ledger</h1>
+<p>Learn the double-entry accounting ledger pattern, why mutable balances fail catastrophically in production, and how modern fintech systems maintain books at scale.</p>
+<p>💳 The <strong>Double-Entry Accounting Ledger pattern</strong> is the universal 101 industry standard for recording money movements in financial systems (Stripe, Uber, Airbnb, Square, Robinhood). Rather than updating a single mutable <code>balance</code> column on a user row, every financial event is modeled as an <strong>append-only, immutable transaction</strong> that simultaneously debits one account and credits another account by the exact same amount in minor currency units—guaranteeing that the system-wide accounting invariant (&sum; Debits &minus; &sum; Credits = 0) is preserved at all times.</p>
+
+<h2 id="double-entry-ledger-the-problem">The Problem (Why Mutable Balances Fail)</h2>
+<p>When novice engineers are asked in a system design interview to build a wallet, payment processor, or e-commerce escrow system, the most common anti-pattern is storing an integer <code>balance</code> column on a <code>users</code> table:</p>
+
+<div class="code-wrap">
+  <div class="code-header">
+    <span>Anti-Pattern &bull; Mutable Balance Updates</span>
+  </div>
+  <pre><code class="language-sql">-- THE CATASTROPHIC ANTI-PATTERN
+UPDATE accounts SET balance = balance + 100 WHERE id = 'user_123';
+</code></pre>
+</div>
+
+<p>In production distributed architectures, this approach fails catastrophically for three reasons:</p>
+<ol>
+  <li><strong>Lost Updates &amp; Concurrency Skew:</strong> Multiple concurrent payment webhooks, authorizations, and refunds race to update the same scalar value. Even with row locks, lock contention degrades throughput to a crawl, and network retries lead to double-crediting.</li>
+  <li><strong>Zero Audit Trail:</strong> If an account's balance drops from $1,000 to $400, a scalar column offers zero historical proof. Who moved the money? Was there fraud? Did a webhook fire twice? You cannot audit, debug, or verify financial integrity without a historical transaction log.</li>
+  <li><strong>Violation of Accounting Invariants:</strong> In real commerce, money is conserved. When a buyer spends $50, that $50 must come out of their account and enter a merchant's or holding account. A single scalar update synthesizes or deletes money in isolation without proving where it went.</li>
+</ol>
+
+<h2 id="double-entry-ledger-the-solution">The Solution (101 Industry Standard)</h2>
+<p>The solution is the 500-year-old commerce standard formalised by Luca Pacioli: <strong>Double-Entry Bookkeeping</strong>. In this architecture, money is never created or destroyed out of thin air. Every financial event is modeled as an <strong>atomic transfer</strong> between two accounts: one account is debited, and another account is credited by the exact same amount.</p>
+
+<div class="arch-zones-grid" style="margin: 1.25rem 0;">
+  <div class="arch-zone zone-client">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">The Fundamental Accounting Equation</span>
+      <span class="arch-tag tag-sec">Zero-Sum Invariant</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>Base Equation:</strong> <code>Assets = Liabilities + Equity</code></li>
+      <li><strong>Expanded Equation:</strong> <code>Assets + Expenses = Liabilities + Equity + Revenue</code></li>
+      <li><strong>Zero-Sum Rule:</strong> For every single transaction: <code>&sum; Debits &minus; &sum; Credits = 0</code>. The books must balance to zero at all times.</li>
+      <li><strong>Auditing Guarantee:</strong> If the sum of debits does not equal credits, the database engine aborts the transaction immediately—preventing financial leakage.</li>
+    </ul>
+  </div>
+
+  <div class="arch-zone zone-server">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">The "DEALER" Mnemonic</span>
+      <span class="arch-tag tag-post">Debit vs Credit Rules</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>D - E - A (Debit Increases):</strong>
+        <br/>&bull; <strong>D</strong>ebit increases <strong>E</strong>xpenses and <strong>A</strong>ssets.
+      </li>
+      <li><strong>C - L - E - R (Credit Increases):</strong>
+        <br/>&bull; <strong>C</strong>redit increases <strong>L</strong>iabilities, <strong>E</strong>quity, and <strong>R</strong>evenue.
+      </li>
+      <li><strong>Conserved Momentum:</strong> An increase in Assets (Debit) must always be funded by an increase in Liabilities/Revenue (Credit) or a decrease in another Asset (Credit).</li>
+    </ul>
+  </div>
+</div>
+
+<h2 id="double-entry-ledger-5-canonical-account-types">5 Canonical Account Types</h2>
+<p>Every account in a financial system belongs to exactly one of the five canonical accounting classes:</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Account Type</th>
+<th>What It Represents</th>
+<th>Normal Balance</th>
+<th>Debit Effect</th>
+<th>Credit Effect</th>
+<th>Fintech / Platform Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ASSET</strong></td>
+<td>Economic resources owned by or held at the platform</td>
+<td>Debit</td>
+<td><span class="flow-pill flow-pill-success">+ Increases</span></td>
+<td><span class="flow-pill flow-pill-danger">- Decreases</span></td>
+<td>Platform bank account, cash reserves, processor settlement receivables</td>
+</tr>
+<tr>
+<td><strong>LIABILITY</strong></td>
+<td>Debts or obligations owed to third parties</td>
+<td>Credit</td>
+<td><span class="flow-pill flow-pill-danger">- Decreases</span></td>
+<td><span class="flow-pill flow-pill-success">+ Increases</span></td>
+<td>Merchant pending payouts, customer stored wallet balances</td>
+</tr>
+<tr>
+<td><strong>EQUITY</strong></td>
+<td>Net worth of the company (Assets &minus; Liabilities)</td>
+<td>Credit</td>
+<td><span class="flow-pill flow-pill-danger">- Decreases</span></td>
+<td><span class="flow-pill flow-pill-success">+ Increases</span></td>
+<td>Founders' capital, retained platform earnings</td>
+</tr>
+<tr>
+<td><strong>REVENUE</strong></td>
+<td>Income generated from platform business operations</td>
+<td>Credit</td>
+<td><span class="flow-pill flow-pill-danger">- Decreases</span></td>
+<td><span class="flow-pill flow-pill-success">+ Increases</span></td>
+<td>Payment processing fee take-rate, subscription revenue</td>
+</tr>
+<tr>
+<td><strong>EXPENSE</strong></td>
+<td>Costs incurred to operate the platform infrastructure</td>
+<td>Debit</td>
+<td><span class="flow-pill flow-pill-success">+ Increases</span></td>
+<td><span class="flow-pill flow-pill-danger">- Decreases</span></td>
+<td>Visa/Mastercard interchange fees, cloud hosting, banking gateway charges</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="double-entry-ledger-schema-and-constraints">Production Database Schema &amp; Relational Constraints</h2>
+<p>Below is the battle-tested, relational schema used by modern fintech ledgers (Stripe, Modern Treasury, Formance, Uber). It enforces relational integrity, idempotency, and strict immutability:</p>
+
+<div class="code-wrap">
+  <div class="code-header">
+    <span>SQL &bull; Double-Entry Ledger Schema</span>
+    <button class="copy-button" type="button">Copy</button>
+  </div>
+  <pre><code class="language-sql">-- 1. Account Types (The 5 Canonical Pillars)
+CREATE TYPE account_type AS ENUM (
+    'ASSET',
+    'LIABILITY',
+    'EQUITY',
+    'REVENUE',
+    'EXPENSE'
+);
+
+-- 2. Accounts Table: Defines the ledger entities
+CREATE TABLE accounts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    type account_type NOT NULL,
+    currency VARCHAR(3) NOT NULL, -- ISO-4217 code: 'USD', 'EUR', 'INR'
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
+
+-- 3. Transactions Table (STRICTLY APPEND-ONLY: No UPDATE / DELETE)
+CREATE TABLE transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    idempotency_key VARCHAR(255) NOT NULL UNIQUE,          -- Prevents double-spend on retries
+    debit_account_id UUID NOT NULL REFERENCES accounts(id), -- Indexed FK
+    credit_account_id UUID NOT NULL REFERENCES accounts(id),-- Indexed FK
+    currency VARCHAR(3) NOT NULL,
+    amount BIGINT NOT NULL CHECK (amount > 0),              -- Minor units (cents/paise), CHECK ensures > 0
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL,
+    CHECK (debit_account_id <> credit_account_id)           -- Cannot debit & credit identical account
+);
+
+-- Compound indexes for rapid ledger balance calculation & statement generation
+CREATE INDEX idx_transactions_debit ON transactions(debit_account_id, created_at);
+CREATE INDEX idx_transactions_credit ON transactions(credit_account_id, created_at);
+</code></pre>
+</div>
+
+<h3>Core Architectural Principles Explained</h3>
+
+<div class="arch-zones-grid" style="margin: 1.25rem 0;">
+  <div class="arch-zone zone-client">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">1. Append-Only (No UPDATE / DELETE)</span>
+      <span class="arch-tag tag-sec">Immutability</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>Legal &amp; Regulatory Compliance:</strong> Financial auditability (SOX, GAAP, PCI-DSS) strictly forbids modifying or deleting historical ledger entries.</li>
+      <li><strong>Corrections via Reversals:</strong> If an erroneous charge occurs or a customer receives a refund, you <em>never</em> edit or delete the transaction row. Instead, you append a new <strong>reversing transaction</strong> (contra entry) that swaps the debit and credit accounts with a fresh <code>idempotency_key</code>.</li>
+      <li><strong>Database Enforcement:</strong> Revoke <code>UPDATE</code> and <code>DELETE</code> privileges on the table for the application role (<code>REVOKE UPDATE, DELETE ON transactions FROM app_role;</code>).</li>
+    </ul>
+  </div>
+
+  <div class="arch-zone zone-idp">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">2. Idempotency Key (No Double-Spend)</span>
+      <span class="arch-tag tag-post">Network Safety</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>Network Retries:</strong> In distributed architectures, client timeouts and network retries are common. Without protection, an automatic retry charges or transfers funds twice.</li>
+      <li><strong>Database Engine Guarantee:</strong> The <code>UNIQUE</code> constraint on <code>idempotency_key</code> guarantees that duplicate requests are rejected at the database engine level.</li>
+      <li><strong>Safe Retries:</strong> Using <code>ON CONFLICT (idempotency_key) DO NOTHING</code> or returning the existing transaction payload turns retry storms into safe no-ops.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="arch-zones-grid" style="margin: 1.25rem 0;">
+  <div class="arch-zone zone-server">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">3. Integer Minor Units (Cents/Paise)</span>
+      <span class="arch-tag tag-post">Zero Precision Loss</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>The Float Trap:</strong> Standard IEEE 754 floating-point types (<code>FLOAT</code>, <code>DOUBLE</code>) introduce binary rounding errors (e.g. <code>0.1 + 0.2 = 0.30000000000000004</code>).</li>
+      <li><strong>Minor Units:</strong> Always store money as 64-bit integers (<code>BIGINT</code>) representing the currency's smallest atomic denomination: <strong>cents</strong> ($10.50 = <code>1050</code>), <strong>paise</strong> (₹50.25 = <code>5025</code>), or <strong>satoshis</strong>.</li>
+      <li><strong>CHECK (amount > 0):</strong> Prevents malicious or erroneous negative amount payloads from covertly inverting debit and credit polarity.</li>
+    </ul>
+  </div>
+
+  <div class="arch-zone zone-ca">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">4. Currency Isolation</span>
+      <span class="arch-tag tag-sec">Multi-Currency</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>Single-Currency Legs:</strong> A transaction row transfers money strictly between accounts of identical currency (e.g. USD &rarr; USD).</li>
+      <li><strong>Foreign Exchange (FX):</strong> When converting USD to EUR, two distinct transactions are posted through a dedicated FX Clearing/Treasury account, preserving isolation.</li>
+    </ul>
+  </div>
+</div>
+
+<h2 id="double-entry-ledger-maintaining-books-walkthrough">Maintaining Books: Step-by-Step Marketplace Walkthrough ($100 Order)</h2>
+<p>Let's trace how books are maintained in a production marketplace (like Shopify or Uber). A customer pays <strong>$100.00</strong> (10,000 cents). The platform takes a <strong>$3.00</strong> (300 cents) fee, and credits the merchant <strong>$97.00</strong> (9,700 cents). Later, the merchant withdraws $97.00 to their external bank account:</p>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>Event &amp; Description</th>
+<th>Debit Account (Increases / Decreases)</th>
+<th>Credit Account (Increases / Decreases)</th>
+<th>Amount</th>
+<th>Accounting Balance Check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Settlement</strong></td>
+<td>Customer payment settles from payment gateway into platform bank account.</td>
+<td><code>Platform_Cash_Account</code><br/><span class="flow-pill flow-pill-success">ASSET (+10,000)</span></td>
+<td><code>Customer_Deposit_Holding</code><br/><span class="flow-pill flow-pill-success">LIABILITY (+10,000)</span></td>
+<td>$100.00 (10,000&cent;)</td>
+<td>Assets (+$100) = Liabilities (+$100)<br/><span class="flow-pill flow-pill-success">Balanced</span></td>
+</tr>
+<tr>
+<td><strong>2. Allocation</strong></td>
+<td>Holding funds are split: $97 owed to Merchant, $3 recognized as Platform Fee Revenue.</td>
+<td><code>Customer_Deposit_Holding</code><br/><span class="flow-pill flow-pill-danger">LIABILITY (-10,000)</span></td>
+<td>
+  1. <code>Merchant_Payable</code> <span class="flow-pill flow-pill-success">LIABILITY (+9,700)</span><br/>
+  2. <code>Platform_Fee_Income</code> <span class="flow-pill flow-pill-success">REVENUE (+300)</span>
+</td>
+<td>$100.00 (split 9,700&cent; / 300&cent;)</td>
+<td>Liabilities net -$3, Revenue +$3<br/><span class="flow-pill flow-pill-success">Balanced</span></td>
+</tr>
+<tr>
+<td><strong>3. Payout</strong></td>
+<td>Platform wires $97.00 from bank to Merchant's personal checking account.</td>
+<td><code>Merchant_Payable</code><br/><span class="flow-pill flow-pill-danger">LIABILITY (-9,700)</span></td>
+<td><code>Platform_Cash_Account</code><br/><span class="flow-pill flow-pill-danger">ASSET (-9,700)</span></td>
+<td>$97.00 (9,700&cent;)</td>
+<td>Liabilities (-$97) = Assets (-$97)<br/><span class="flow-pill flow-pill-success">Balanced</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<p><strong>Final Audit Verification:</strong></p>
+<ul>
+  <li><code>Platform_Cash_Account</code> (ASSET): $100 in &minus; $97 out = <strong>+$3.00 cash retained in bank</strong>.</li>
+  <li><code>Platform_Fee_Income</code> (REVENUE): <strong>+$3.00 revenue earned</strong>.</li>
+  <li><code>Customer_Deposit_Holding</code> &amp; <code>Merchant_Payable</code> (LIABILITIES): <strong>$0.00 owed</strong> (completely cleared).</li>
+  <li><code>Total Assets ($3.00) = Total Liabilities ($0.00) + Total Revenue ($3.00)</code>. <strong>Books are 100% reconciled and balanced!</strong></li>
+</ul>
+
+<h2 id="double-entry-ledger-scaling-reads-checkpoints">Scaling Reads: The Snapshot Checkpoint Pattern</h2>
+<p>Because there is no mutable <code>balance</code> column, an account's balance is derived by aggregating historical transactions:</p>
+
+<div class="code-wrap">
+  <div class="code-header">
+    <span>SQL &bull; Deriving Account Balance</span>
+    <button class="copy-button" type="button">Copy</button>
+  </div>
+  <pre><code class="language-sql">-- For ASSET or EXPENSE accounts (Debit Normal):
+SELECT COALESCE(
+    SUM(CASE WHEN debit_account_id = :acc_id THEN amount ELSE -amount END),
+    0
+) AS balance
+FROM transactions
+WHERE debit_account_id = :acc_id OR credit_account_id = :acc_id;
+
+-- For LIABILITY, EQUITY, or REVENUE accounts (Credit Normal):
+SELECT COALESCE(
+    SUM(CASE WHEN credit_account_id = :acc_id THEN amount ELSE -amount END),
+    0
+) AS balance
+FROM transactions
+WHERE debit_account_id = :acc_id OR credit_account_id = :acc_id;
+</code></pre>
+</div>
+
+<h4>Scaling Beyond Million-Row Aggregations: Checkpoint Snapshots</h4>
+<p>Summing transactions from the beginning of time is $O(N)$, causing high database CPU and latency on active accounts. In production systems:</p>
+<ol>
+  <li><strong>Account Snapshots Table:</strong> A dedicated table stores <code>account_id</code>, <code>snapshot_balance</code>, <code>last_transaction_id</code>, and <code>snapshot_time</code>.</li>
+  <li><strong>Periodic Checkpoint Worker:</strong> An asynchronous background job calculates and records checkpoints hourly or nightly.</li>
+  <li><strong>Fast Incremental Balance:</strong> To get the current live balance, query the last snapshot and add only transactions created <em>after</em> <code>last_transaction_id</code>:
+    <br/><code>Live Balance = snapshot_balance + &sum; transactions(id &gt; last_transaction_id)</code>.
+    <br/>This reduces the scanned rows from 10,000,000+ to less than 10 rows, delivering sub-millisecond read latency.</li>
+</ol>
+
+<h2 id="double-entry-ledger-trade-offs">Trade-offs &amp; When to Use in Interviews</h2>
+<div class="arch-zones-grid" style="margin: 1.25rem 0;">
+  <div class="arch-zone zone-client">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">What You Gain</span>
+      <span class="arch-tag tag-post">Pros</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>Mathematical Correctness:</strong> Zero lost updates, no race conditions, and complete conservation of money.</li>
+      <li><strong>Complete Auditability:</strong> An unbroken timeline of every financial event since system inception.</li>
+      <li><strong>Regulatory Compliance:</strong> Meets strict GAAP, SOX, and banking regulations out of the box.</li>
+      <li><strong>Trivially Safe Retries:</strong> Idempotency keys prevent double charging or balance corruption.</li>
+    </ul>
+  </div>
+
+  <div class="arch-zone zone-attacker">
+    <div class="arch-zone-header">
+      <span class="arch-zone-title">What You Lose</span>
+      <span class="arch-tag tag-sec">Trade-offs</span>
+    </div>
+    <ul class="pki-node-list">
+      <li><strong>Write Amplification:</strong> Every money movement creates transaction records and compound index updates.</li>
+      <li><strong>Read Complexity:</strong> Calculating balances requires aggregations and snapshot checkpoint infrastructure.</li>
+      <li><strong>Schema Rigidity:</strong> Reversing mistakes requires strict contra-entries instead of quick database updates.</li>
+    </ul>
+  </div>
+</div>
+
+<h3>When to Propose This Pattern in Interviews</h3>
+<p>Proactively bring up the Double-Entry Accounting Ledger pattern whenever your system design problem involves:</p>
+<ul>
+  <li><strong>Payment Processing:</strong> Stripe, PayPal, Adyen, Braintree</li>
+  <li><strong>Marketplaces &amp; Gig Economy:</strong> Uber (rider charges &rarr; driver payouts), Airbnb, DoorDash, Shopify</li>
+  <li><strong>Investment &amp; Trading Platforms:</strong> Robinhood, Coinbase, Binance (order execution &amp; crypto/fiat ledgers)</li>
+  <li><strong>Digital Wallets &amp; P2P:</strong> Venmo, Cash App, Paytm, Apple Pay Cash</li>
+</ul>
+
 <p>Mark as read</p>
 <p>Next: Redis</p>
 <p>&lt;div class="comments-container w-full max-w-full min-w-0 overflow-x-hidden overflow-y-hidden pb-6"</p>
