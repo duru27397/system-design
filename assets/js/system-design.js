@@ -224,6 +224,10 @@
     }
 
     // Direct aliases for quick deep-linking
+    if (pageId === "outbox-pattern-cdc" || pageId === "outbox-pattern" || pageId === "outbox-cdc" || pageId === "dual-write-problem" || pageId === "transactional-outbox") {
+      showPage("deep-dives-change-data-capture", false, "change-data-capture-outbox-pattern-cdc");
+      return;
+    }
     if (pageId === "double-entry-ledger" || pageId === "patterns-double-entry-accounting-ledger" || pageId === "common-patterns-double-entry-ledger") {
       showPage("patterns-double-entry-ledger", false, subId);
       return;
